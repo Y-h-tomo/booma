@@ -1,0 +1,191 @@
+/*
+
+共通部品
+
+*/
+
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+html {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.btn,
+a.btn,
+button.btn {
+    /* font-size: 0.3rem;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 1rem;
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    border: none; */
+    /* border-radius: 5px; */
+}
+
+.tag {
+    margin: 0.2rem;
+    text-align: center;
+    vertical-align: middle;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    border: none;
+    padding: 0.2rem 0.7rem;
+    color: #fff;
+    background-color: #f95959;
+}
+
+.flash {
+    font-size: 1rem;
+}
+
+.input-span {
+    float: right;
+}
+
+.base-line {
+    position: relative;
+    bottom: 0;
+}
+
+.genre-btn {
+    border: 2px solid #006DD9;
+    border-radius: 5px;
+}
+
+.genre-box:checked+.genre-btn {
+    background: #448AFF;
+    color: #ffffff;
+}
+
+.genre-box {
+    display: none;
+}
+
+.role-btn {
+    border: 2px solid #006DD9;
+    border-radius: 5px;
+    font-size: 5px;
+}
+
+.role-box:checked+.role-btn {
+    background: #448AFF;
+    color: #ffffff;
+}
+
+.role-box {
+    display: none;
+}
+
+.asc::after {
+    content: '';
+    display: inline-block;
+    width: 13px;
+    height: 20px;
+    background-size: contain;
+    vertical-align: middle;
+    background-image: url("/img/caret-up-solid.svg");
+    color: #000;
+}
+
+.desc::after {
+    content: '';
+    display: inline-block;
+    width: 13px;
+    height: 20px;
+    background-size: contain;
+    vertical-align: middle;
+    background-image: url("/img/caret-down-solid.svg");
+    color: #000;
+}
+
+#un-favorite-btn {
+    position: relative;
+    left: -89px;
+}
+
+
+/*
+
+ユーザーメニュー
+
+*/
+
+.user-index {
+    width: 100%;
+    margin: 0.2em;
+    padding: 0.2em;
+    background-color: #dbe2ef;
+}
+
+.user-list {
+    width: 100%;
+    border: 1px solid #212121;
+}
+
+.user-list tr th {
+    padding: 0.2em;
+    background-color: #BDBDBD;
+    border: 1px solid #212121;
+}
+
+.user-list tr td {
+    padding: 0.2em;
+    border: 1px solid #212121;
+}
+
+
+/*
+
+　モーダル
+
+*/
+
+.js-modal-input {
+    margin: 0.2em;
+    color: #fff;
+    background-color: rgb(22, 134, 134);
+}
+
+.modal-close {
+    margin: 0.2em;
+    color: #fff;
+    background: #ff0000;
+}
+
+.modal-btn {
+    width: max-content;
+    padding: 0.2em;
+    background-color: rgba(250, 250, 250, 0.6);
+}
+
+.remodal-field h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.remodal-field input {
+    margin: 2em;
+    font-size: 1.2em;
+}
+
+.remodal-btn {
+    padding: 1em;
+}

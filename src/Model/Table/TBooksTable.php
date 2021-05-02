@@ -59,12 +59,13 @@ class TBooksTable extends Table
             'foreignKey' => 't_books_id',
             'joinType' => 'INNER',
         ]);
+
         $this->hasMany('THistories', [
-            'foreignKey' => 'id',
+            'foreignKey' => 't_books_id',
             'joinType' => 'INNER',
         ]);
         $this->hasMany('TFavorites', [
-            'foreignKey' => 'id',
+            'foreignKey' =>  't_books_id',
             'joinType' => 'INNER',
         ]);
     }

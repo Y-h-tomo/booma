@@ -205,6 +205,7 @@ window.onload = (function() {
         data: {
             name: "",
             genres: [],
+            checked: [],
         },
         methods: {
             reset: function() {
@@ -216,7 +217,7 @@ window.onload = (function() {
             },
         },
         computed: {
-            isDisabled: function() {
+            isDisabled: function(n) {
                 if (this.genres.length > 0) {
                     return true;
                 }

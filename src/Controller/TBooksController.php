@@ -32,6 +32,7 @@ class TBooksController extends AppController
         // 検索データ取得
         $inputName = $this->request->getQuery('search_books');
         $inputGenre = $this->request->getQuery('genre');
+        $csv = $this->request->getQuery('csv');
 
         $this->paginate = [
             'sortableFields' => [
@@ -56,11 +57,46 @@ class TBooksController extends AppController
             $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ]));
         }
 
+         /* -------------------------------- csv出力メソッド ------------------------------- */
+        if($csv == 1){
+            $books = $tBooks->toArray();
+            $csvBooks = [];
+            foreach($books as $book){
+                $genres = '';
+                foreach($book->m_genres as $genre){
+                    $genres .= $genre->genre.',';
+                }
+                $book['genres'] = $genres;
+                $csvBooks[] = [
+                    $book['id'],
+                    $book['image'],
+                    $book['name'],
+                    $book['book_no'],
+                    $book['genres'],
+                    $book['deadline'],
+                    $book['remain'],
+                    $book['quantity'],
+                    $book['price'],
+                    $book['outline'],
+                ];
+            };
+            $data = $csvBooks;
+            $_serialize = ['data'];
+            $_header = [
+                'ID','画像名', '名前', '書籍No','ジャンル','最大レンタル時間','在庫','登録冊数','価格','概要',
+            ];
+            $_csvEncoding = 'CP932';
+            $_newline = "\r\n";
+            $_eol = "\r\n";
+            $this->setResponse($this->getResponse()->withDownload('Books.csv'));
+            $this->viewBuilder()->setClassName('CsvView.Csv');
+            $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
+        }
 
         $genres = $this->TBooks->MGenres->find();
-
         $this->set(compact('genres'));
         $this->set(compact('tBooks'));
+
     }
 
     /**

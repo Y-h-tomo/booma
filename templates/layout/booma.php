@@ -20,7 +20,7 @@ if ($session->check('User.name')) {
 $page = $this->name;
 $action = $this->getRequest()->getParam('action');
 $book_page = ['TBooks','THistories','TFavorites'];
-
+$query = $this->request->getServerParams()['QUERY_STRING'];
 
 ?>
 <!DOCTYPE html>
@@ -289,7 +289,7 @@ $book_page = ['TBooks','THistories','TFavorites'];
                     <div class="remodal col" data-remodal-id="modal_b">
                       <?php foreach ($genres as $g) : ?>
                       <input type="checkbox" value="<?= $g['id'] . ':' . $g['genre'] ?>" v-model="genres"
-                        v-bind:disabled="isDisabled" id="genre-btn-<?= $g['id'] ?>" class="genre-box">
+                        :disabled="isDisabled" id="genre-btn-<?= $g['id'] ?>" class="genre-box">
                       <label class="genre-btn btn" for="genre-btn-<?= $g['id'] ?>"><?= $g['genre'] ?>
                       </label>
                       <?php endforeach; ?>
@@ -299,7 +299,7 @@ $book_page = ['TBooks','THistories','TFavorites'];
                     </div>
                     <!-- /* -------------------------------------------------------------------------- */ -->
 
-                    <input type="text" name="genre" :value="genres">
+                    <input type="hidden" name="genre" :value="genres">
                   </div>
                   <input type="submit" class="btn btn-primary" value="検索">
                   <button type="button" class="btn btn-outline-secondary" @click.prevent="reset">リセット</button>
@@ -386,16 +386,33 @@ $book_page = ['TBooks','THistories','TFavorites'];
                 </li>
               </ul>
 
-              <!-- CSV出力 -->
+              <!-- /* -------------------------------- CSV出力  書籍 ------------------------------- */ -->
+
+              <?php if ( ( in_array($page, $book_page) && $action == 'index') ||  ($page == 'THistories' && $action == 'view')): ?>
               <ul class="pcoded-item pcoded-left-item">
                 <li class="">
-                  <a href="index.html" class="waves-effect waves-dark">
+                  <a href="?csv=1&<?= $query ?>" class="waves-effect waves-dark">
                     <span class="pcoded-micon"><i class="ti-write"></i><b>C</b></span>
                     <span class="pcoded-mtext">CSV Export</span>
                     <span class="pcoded-mcaret"></span>
                   </a>
                 </li>
               </ul>
+              <?php endif; ?>
+
+              <!-- /* ------------------------------- csv出力 ユーザー ------------------------------- */ -->
+
+              <?php if ($page == 'MUsers' && $acton == 'index') : ?>
+              <ul class="pcoded-item pcoded-left-item">
+                <li class="">
+                  <a href="?csv=1&<?= $query ?>" class="waves-effect waves-dark">
+                    <span class="pcoded-micon"><i class="ti-write"></i><b>C</b></span>
+                    <span class="pcoded-mtext">CSV Export</span>
+                    <span class="pcoded-mcaret"></span>
+                  </a>
+                </li>
+              </ul>
+              <?php endif; ?>
 
               <!-- ANCHOR----- レンタル処理 --------------------------------- */ -->
               <?php if ($page == 'TBooks' && $action == 'view') : ?>

@@ -49,14 +49,6 @@ class TBookGenresTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->hasMany('TBooks', [
-            'foreignKey' => 'id',
-            'joinType' => 'INNER',
-        ]);
-        $this->hasMany('MGenres', [
-            'foreignKey' => 'm_genres_id',
-            'joinType' => 'INNER',
-        ]);
     }
 
     /**

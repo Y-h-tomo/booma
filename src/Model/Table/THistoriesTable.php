@@ -53,6 +53,7 @@ class THistoriesTable extends Table
             'foreignKey' => 't_books_id',
             'joinType' => 'INNER',
         ]);
+
         $this->belongsTo('MUsers', [
             'foreignKey' => 'm_users_id',
             'joinType' => 'INNER',

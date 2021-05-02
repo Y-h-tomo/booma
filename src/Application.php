@@ -57,6 +57,8 @@ implements AuthenticationServiceProviderInterface
      */
     public function bootstrap(): void
     {
+        $this->addPlugin('CsvView');
+
         $this->addPlugin('Migrations');
 
         // Call parent to load bootstrap from files.

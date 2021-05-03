@@ -38,7 +38,7 @@ class TBooksController extends AppController
             'sortableFields' => [
                 'id', 'name', 'book_no', 'MGenres.id', 'deadline', 'remain', 'quantity'
             ],
-            'contain' =>  ['MGenres','TBookGenres']
+            'contain' =>  ['MGenres']
         ];
 
         // 書籍名曖昧検索
@@ -51,7 +51,7 @@ class TBooksController extends AppController
         // ジャンル選択によりフィルタリング
         if(!empty($inputGenre)){
             $id = explode(':',$inputGenre)[0];
-            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ])->contain(['TBookGenres'])->matching('TBookGenres', function ($q) use ($id) {return $q->where(['TBookGenres.m_genres_id' => $id]);
+            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ])->contain(['MGenres'])->matching('MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
             }));
         }else{
             $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ]));
@@ -256,11 +256,11 @@ class TBooksController extends AppController
 
 
                 $data = $this->Session->read('book');
-
+                // debug($data);
                 // デバッグテスト
                 // if (!empty($data)) {
-                //     throw new NotFoundException(__('データが見つかりません'));
-                // }
+                    //     throw new NotFoundException(__('データが見つかりません'));
+                    // }
 
                 /* ---------------------------------- 書籍データ処理 --------------------------------- */
 
@@ -270,6 +270,7 @@ class TBooksController extends AppController
                     ['validate' => 'noImage']
                 );
 
+
                 // バリデーションエラー時、フラッシュ＆リダイレクト関数
                 if (!empty($tBook->getErrors())) {
                     $this->_flashError($tBook->getErrors(), 'add');
@@ -278,6 +279,7 @@ class TBooksController extends AppController
                 /* -------------------------------- ジャンルデータ処理 ------------------------------- */
 
                 if ($this->TBooks->save($tBook)) {
+
                     // 書籍ジャンル 中間テーブルジャンル保存メソッド
                     $this->_genreSave($tBook);
 

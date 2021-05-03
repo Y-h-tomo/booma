@@ -57,6 +57,43 @@ class THistoriesController extends AppController
             $tHistories = $this->paginate($this->THistories->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id ]));
         }
 
+        /* -------------------------------- csv出力メソッド ------------------------------- */
+        if($csv == 1){
+            $histories = $tHistories->toArray();
+            $csvBooks = [];
+            foreach($histories as $history){
+                $genres = '';
+                foreach($history->t_book->m_genres as $genre){
+                    $genres .= $genre->genre.',';
+                }
+                $history->t_book['genres'] = $genres;
+                $csvBooks[] = [
+                    $history->id,
+                    $history->t_book['image'],
+                    $history->t_book['name'],
+                    $history->t_book['book_no'],
+                    $history->t_book['genres'],
+                    $history->rental_time->i18nFormat('yyyy-MM-dd HH:mm:ss'),
+                    $history->t_book['remain'],
+                    $history->t_book['quantity'],
+                    $history->t_book['price'],
+                    $history->t_book['outline'],
+                ];
+            };
+            $data = $csvBooks;
+            $_serialize = ['data'];
+            $_header = [
+                'ID','画像名', '名前', '書籍No','ジャンル','最終レンタル日','在庫','登録冊数','価格','概要',
+            ];
+            $_csvEncoding = 'CP932';
+            $_newline = "\r\n";
+            $_eol = "\r\n";
+            $this->setResponse($this->getResponse()->withDownload('Books.csv'));
+            $this->viewBuilder()->setClassName('CsvView.Csv');
+            $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
+        }
+
+
         $genres = $this->THistories->TBooks->MGenres->find();
 
         $this->set(compact('genres'));
@@ -78,18 +115,32 @@ class THistoriesController extends AppController
     public function view()
     {
         $user_id = $this->Session->read('User.id');
-        $data = $this->request->getQuery('search_books');
+                    // 検索データ取得
+                    $inputName = $this->request->getQuery('search_books');
+                    $inputGenre = $this->request->getQuery('genre');
+                    $csv = $this->request->getQuery('csv');
         $this->paginate = [
             'sortableFields' => [
                 'id', 'TBooks.name', 'TBooks.book_no', 'return_time', 'TBooks.remain', 'TBooks.quantity', 'TBooks.id', 'TBooks.image'
             ],
-            'contain' => ['TBooks', 'MUsers'],
+            'contain' => ['TBooks', 'MUsers','TBooks.MGenres']
         ];
-        if (!empty($data)) {
-            $tHistories = $this->paginate($this->THistories->find()->where(['THistories.del_flg' => 0, 'TBooks.name LIKE' => "%{$data}%", 'THistories.m_users_id' => $user_id]));
-        } else {
-            $tHistories = $this->paginate($this->THistories->find()->where(['THistories.del_flg' => 0, 'THistories.m_users_id' => $user_id]));
+            // 書籍名曖昧検索
+            if(!empty($inputName)){
+                $sqlName = $inputName;
+            } else {
+                $sqlName = '';
+            }
+
+        // ジャンル選択によりフィルタリング
+        if(!empty($inputGenre)){
+            $id = explode(':',$inputGenre)[0];
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg'=> 0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
+            }));
+        }else{
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg'=> 0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id ]));
         }
+
         $genres = $this->THistories->TBooks->MGenres->find();
 
         $this->set(compact('genres'));
@@ -243,6 +294,11 @@ class THistoriesController extends AppController
                     return $this->redirect(['controller' => 'TBooks', 'action' => 'index']);
                 }
 
+                /* --------------------------------- 延滞時間の算出 -------------------------------- */
+                $time = FrozenTime::now()->i18nFormat('yyyy-MM-dd HH:mm:ss');
+                $returnTime = $returned->return_time->i18nFormat('yyyy-MM-dd HH:mm:ss');
+                $arrears = floor((strtotime($time) - strtotime($returnTime))/HOUR);
+
                 /* --------------------------------- 書籍情報の取得 -------------------------------- */
                 $tBook = $this->THistories->TBooks->get([$data['t_books_id']]);
 
@@ -255,6 +311,9 @@ class THistoriesController extends AppController
 
                 /* ---------------------------------- データ更新 --------------------------------- */
                 $tHistory = $this->THistories->get($returned['id']);
+                if($arrears > 0){
+                    $tHistory['arrears'] = $arrears;
+                }
                 $tHistory  = $this->THistories->patchEntity(
                     $tHistory,
                     ['del_flg' => 1]
@@ -280,6 +339,9 @@ class THistoriesController extends AppController
                     //   コミット
                     $connection->commit();
                     $this->Flash->success(__('書籍の返却に成功しました。'));
+                    if ($arrears > 0) {
+                        $this->Flash->warning(__("延滞時間が{$arrears}時間 発生しました。"));
+                    }
                     return $this->redirect(['controller' => 'TBooks', 'action' => 'index']);
                 }
             } catch (\Exception $e) {

@@ -3,26 +3,25 @@
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\MGenre $mGenre
  */
+
+$this->assign('title', 'Add Genre : ジャンル登録');
+
 ?>
 <div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List M Genres'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+  <div class="col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5><?= $this->fetch('title') ?></h5>
+      </div>
+      <div class="card-block">
+        <?= $this->Form->create($mGenre, ['class' => 'form-material']) ?>
+        <div class="form-group form-default">
+          <?= $this->Form->control('genre', ['label' => 'ジャンル', 'class' => 'form-control']); ?>
+          <span class="form-bar"></span>
         </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="mGenres form content">
-            <?= $this->Form->create($mGenre) ?>
-            <fieldset>
-                <legend><?= __('Add M Genre') ?></legend>
-                <?php
-                    echo $this->Form->control('genre');
-                    echo $this->Form->control('del_flg');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+        <?= $this->Form->button('Register - 登録', ['type' => 'submit', 'class' => 'btn-primary btn']) ?>
+        <?= $this->Form->end() ?>
+      </div>
     </div>
+  </div>
 </div>

@@ -67,9 +67,10 @@ class MGenresTable extends Table
 
         $validator
             ->scalar('genre')
-            ->maxLength('genre', 50)
+            ->maxLength('genre', 50,'ジャンル名は最大50文字です')
             ->requirePresence('genre', 'create')
-            ->notEmptyString('genre');
+            ->notEmptyString('genre','ジャンル名は入力必須です。')
+            ->add('genre', 'unique', ['rule' => 'validateUnique', 'provider' => 'table', 'message' => 'ジャンル名が重複しています。']);
 
         $validator
             ->boolean('del_flg')

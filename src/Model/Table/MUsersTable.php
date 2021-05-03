@@ -105,11 +105,6 @@ class MUsersTable extends Table
             ->notEmptyString('role', '権限は入力必須です。');
 
         $validator
-            ->range('arrears', [0, 999999999], '累積延滞時間は最大９桁です')
-            ->nonNegativeInteger('arrears')
-            ->allowEmptyString('arrears');
-
-        $validator
             ->boolean('del_flg')
             ->allowEmptyString('del_flg');
 

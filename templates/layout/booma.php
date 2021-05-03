@@ -307,7 +307,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
               </div>
               <?php endif; ?>
 
-              <?php if ($page == 'MUsers' && $acton == 'index') : ?>
+              <?php if ($page == 'MUsers' && $action == 'index') : ?>
               <div class="p-15 p-b-0" id="js-search-user">
                 <form class="form-material" method="get">
                   <div class="form-group form-primary">
@@ -339,7 +339,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
                 <li>
                   <a href="/" class="waves-effect waves-dark">
                     <span class="pcoded-micon"><i class="ti-book"></i></span>
-                    <span class="pcoded-mtext">Book List：書籍リスト</span>
+                    <span class="pcoded-mtext">Book List</span>
                     <span class="pcoded-mcaret"></span>
                   </a>
                 </li>
@@ -355,19 +355,22 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
                   <ul class="pcoded-submenu">
                     <li class="">
                       <a href="/t-histories/view" class="waves-effect waves-dark">
-                        <span class="pcoded-mtext">My Page : レンタル中書籍</span>
+                        <span class="pcoded-mtext">My Page</span><br>
+                        <span class="pcoded-mtext">レンタル中書籍</span>
                         <span class="pcoded-mcaret"></span>
                       </a>
                     </li>
                     <li class="">
                       <a href="/t-histories/index" class="waves-effect waves-dark">
-                        <span class="pcoded-mtext">My History : レンタル履歴</span>
+                        <span class="pcoded-mtext">My History</span><br>
+                        <span class="pcoded-mtext">レンタル履歴</span>
                         <span class="pcoded-mcaret"></span>
                       </a>
                     </li>
                     <li class="">
                       <a href="/t-favorites/index" class="waves-effect waves-dark">
-                        <span class="pcoded-mtext">My Favorite : お気に入り</span>
+                        <span class="pcoded-mtext">My Favorite</span><br>
+                        <span class="pcoded-mtext">お気に入り</span>
                         <span class="pcoded-mcaret"></span>
                       </a>
                     </li>
@@ -402,7 +405,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
 
               <!-- /* ------------------------------- csv出力 ユーザー ------------------------------- */ -->
 
-              <?php if ($page == 'MUsers' && $acton == 'index') : ?>
+              <?php if ( ($page == 'MUsers') && ($action == 'index')) : ?>
               <ul class="pcoded-item pcoded-left-item">
                 <li class="">
                   <a href="?csv=1&<?= $query ?>" class="waves-effect waves-dark">
@@ -457,22 +460,48 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
                 <li class="pcoded-hasmenu ">
                   <a href="javascript:void(0)" class="waves-effect waves-dark">
                     <span class="pcoded-micon"><i class="ti-hummer"></i><b>B</b></span>
-                    <span class="pcoded-mtext">Admin Menu:管理</span>
+                    <span class="pcoded-mtext">Admin : 管理</span>
                     <span class="pcoded-mcaret"></span>
                   </a>
                   <ul class="pcoded-submenu">
                     <li class="">
                       <a href="<?= $this->Url->build(['controller' => 'TBooks', 'action' => 'add']) ?>"
                         class="waves-effect waves-dark">
-                        <span class="pcoded-mtext">Add Book : 書籍登録</span>
+                        <span class="pcoded-mtext">Add Book</span><br>
+                        <span class="pcoded-mtext">書籍登録</span>
+                        <span class="pcoded-mcaret"></span>
+                      </a>
+                    </li>
+                    <li class="">
+                      <a href="<?= $this->Url->build(['controller' => 'MGenres', 'action' => 'index']) ?>"
+                        class="waves-effect waves-dark">
+                        <span class="pcoded-mtext">Genre List</span><br>
+                        <span class="pcoded-mtext">ジャンル一覧</span>
                         <span class="pcoded-mcaret"></span>
                       </a>
                     </li>
                     <?php if ($role == '3') : ?>
                     <li class="">
+                      <a href="<?= $this->Url->build(['controller' => 'MGenres', 'action' => 'add']) ?>"
+                        class="waves-effect waves-dark">
+                        <span class="pcoded-mtext">Add Genre</span><br>
+                        <span class="pcoded-mtext">ジャンル登録</span>
+                        <span class="pcoded-mcaret"></span>
+                      </a>
+                    </li>
+                    <li class="">
                       <a href="<?= $this->Url->build(['controller' => 'MUsers', 'action' => 'index']) ?>"
                         class="waves-effect waves-dark">
-                        <span class="pcoded-mtext">User List : ユーザーリスト</span>
+                        <span class="pcoded-mtext">User List</span><br>
+                        <span class="pcoded-mtext">ユーザーリスト</span>
+                        <span class="pcoded-mcaret"></span>
+                      </a>
+                    </li>
+                    <li class="">
+                      <a href="<?= $this->Url->build(['controller' => 'MUsers', 'action' => 'add']) ?>"
+                        class="waves-effect waves-dark">
+                        <span class="pcoded-mtext">Add User</span><br>
+                        <span class="pcoded-mtext">ユーザー登録</span>
                         <span class="pcoded-mcaret"></span>
                       </a>
                     </li>

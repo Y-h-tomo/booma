@@ -209,11 +209,6 @@ class TBooksTable extends Table
             ->requirePresence('image', 'create')
             ->allowEmptyString('image', null, 'create');
 
-        $validator
-            ->scalar('image')
-            ->maxLength('image', 50)
-            ->requirePresence('image', 'create')
-            ->allowEmptyString('image', null, 'create');
         return $validator;
     }
 

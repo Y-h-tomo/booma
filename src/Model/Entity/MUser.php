@@ -17,7 +17,6 @@ use Cake\ORM\Entity;
  * @property string $password
  * @property string $email
  * @property int $role
- * @property int|null $arrears
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
  * @property bool|null $del_flg
@@ -40,7 +39,6 @@ class MUser extends Entity
         'password' => true,
         'email' => true,
         'role' => true,
-        'arrears' => true,
         'created' => true,
         'modified' => true,
         'del_flg' => true,

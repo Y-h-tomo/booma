@@ -89,12 +89,6 @@ class Initial extends AbstractMigration
                 'limit' => null,
                 'null' => false,
             ])
-            ->addColumn('arrears', 'integer', [
-                'default' => null,
-                'limit' => null,
-                'null' => true,
-                'signed' => false,
-            ])
             ->addColumn('created', 'datetime', [
                 'default' => 'CURRENT_TIMESTAMP',
                 'limit' => null,

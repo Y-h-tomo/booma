@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+
+use Cake\ORM\TableRegistry;
+use Cake\Datasource\ConnectionManager;
+use Cake\Network\Exception\NotFoundException;
+
 /**
  * MUsers Controller
  *
@@ -21,29 +26,37 @@ class MUsersController extends AppController
     {
         $this->userValid();
         // 検索クエリ取得
-        $data = $this->request->getQuery();
-        // ベースクエリ
-        $q = "del_flg = 0";
+        $inputName = $this->request->getQuery('search_users');
+        $inputRole = $this->request->getQuery('search_role');
+        $csv = $this->request->getQuery('csv');
 
-        // ユーザー名あいまい検索
-        if (!empty($data['search_users'])) {
-            $name = " AND name LIKE '%{$data['search_users']}%'";
+        $this->paginate = [
+            'sortableFields' => [
+                'user_no', 'name', 'login_no', 'email', 'role'
+            ],
+            'contain' =>  ['THistories']
+        ];
+
+          // ユーザー名曖昧検索
+          if(!empty($inputName)){
+            $sqlName = $inputName;
         } else {
-            $name = '';
+            $sqlName = '';
         }
-        $q .= $name;
 
-        // 権限選択
-        if (!empty($data['search_role'])) {
-            $role = " AND role = {$data['search_role']}";
+        // 権限でフィルタリング
+        if (!empty($inputRole)) {
+            $query = $this->MUsers->find()->where(['del_flg' => 0,'name LIKE' => "%{$sqlName}%",'role' => $inputRole]);
         } else {
-            $role  = '';
+            $query = $this->MUsers->find()->where(['del_flg' => 0,'name LIKE' => "%{$sqlName}%"]);
         }
-        $q .= $role;
-
-        $query = $this->MUsers->find()->where([$q]);
 
         $mUsers = $this->paginate($query);
+
+         /* -------------------------------- csv出力メソッド ------------------------------- */
+        if($csv == 1){
+            $this->_csvExport($mUsers);
+        }
 
         $this->set(compact('mUsers'));
     }
@@ -254,5 +267,50 @@ class MUsersController extends AppController
             }
         }
         return $this->redirect(['action' => $action, $id]);
+    }
+
+    /**
+     * csv出力メソッド
+     */
+    protected function _csvExport($mUsers)
+    {
+        $users = $mUsers->toArray();
+        $csvUsers = [];
+        foreach($users as $user){
+            $roleName ='';
+            switch($user['role']){
+                    case 1:
+                        $roleName = '1：一般ユーザー' ;
+                        break;
+                    case 2:
+                        $roleName = '2：担当者' ;
+                        break;
+                    case 3:
+                        $roleName = '3：管理者' ;
+                        break;
+                    default:
+                        $roleName = '権限なし' ;
+                        break;
+                        }
+            $csvUsers[] = [
+                $user['id'],
+                $user['user_no'],
+                $user['name'],
+                $user['login_no'],
+                $user['email'],
+                $roleName,
+            ];
+        };
+        $data = $csvUsers;
+        $_serialize = ['data'];
+        $_header = [
+            'ID','ユーザーNo', '名前', 'ログインNo','Email','権限',
+        ];
+        $_csvEncoding = 'CP932';
+        $_newline = "\r\n";
+        $_eol = "\r\n";
+        $this->setResponse($this->getResponse()->withDownload('Users.csv'));
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
     }
 }

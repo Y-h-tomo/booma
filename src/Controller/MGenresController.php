@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+
+use Cake\ORM\TableRegistry;
+use Cake\Datasource\ConnectionManager;
+use Cake\Network\Exception\NotFoundException;
+
+
 /**
  * MGenres Controller
  *
@@ -18,7 +24,15 @@ class MGenresController extends AppController
      */
     public function index()
     {
-        $mGenres = $this->paginate($this->MGenres);
+        // 検索データ取得
+        $inputName = $this->request->getQuery('search_genres');
+        // ジャンル名曖昧検索
+        if(!empty($inputName)){
+                $sqlName = $inputName;
+            } else {
+                $sqlName = '';
+            };
+        $mGenres = $this->paginate($this->MGenres->find()->where(['del_flg'=> 0,'genre LIKE' => "%{$sqlName}%"]));
 
         $this->set(compact('mGenres'));
     }
@@ -46,20 +60,33 @@ class MGenresController extends AppController
      */
     public function add()
     {
+        $this->userValid();
+
         $mGenre = $this->MGenres->newEmptyEntity();
         if ($this->request->is('post')) {
+            // トランザクション
+            $connection = ConnectionManager::get('default');
+            $connection->begin();
+            try {
             $data = $this->request->getData();
             $data['del_flg'] = 0;
             $mGenre = $this->MGenres->patchEntity($mGenre, $data);
-            if ($this->MGenres->save($mGenre)) {
+                if($this->MGenres->save($mGenre)) {
+               //コミット
+               $connection->commit();
                 $this->Flash->success(__('ジャンル登録に成功しました。'));
-
+                }
+            } catch (\Exception $e) {
+             // ロールバック
+               $connection->rollback();
                 return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('ジャンル登録に失敗しました。'));
-        }
+               $this->Flash->error(__('ジャンル登録に失敗しました。'));
+           }
         $this->set(compact('mGenre'));
     }
+        $this->Flash->error(__('アクセスエラーが発生しました'));
+        return $this->redirect(['action' => 'index']);
+}
 
     /**
      * Edit method
@@ -94,19 +121,30 @@ class MGenresController extends AppController
      */
     public function delete($id = null)
     {
+        $this->userValid();
+
         $mGenre = $this->MGenres->get($id);
         if ($this->request->allowMethod(['post', 'delete'])) {
+           // トランザクション
+        $connection = ConnectionManager::get('default');
+        $connection->begin();
+        try {
             $mGenre = $this->MGenres->patchEntity(
                 $mGenre,
                 ['del_flg' => 1]
             );
             if ($this->MGenres->save($mGenre)) {
+                      //   コミット
+                $connection->commit();
                 $this->Flash->success(__('ジャンルの削除に成功しました。'));
-            } else {
+            }
+        } catch (\Exception $e) {
+            // ロールバック
+            $connection->rollback();
                 $this->Flash->error(__('ジャンルの削除に失敗しました。'));
             }
         }
-
+        $this->Flash->error(__('アクセスエラーが発生しました'));
         return $this->redirect(['action' => 'index']);
     }
         /* -------------------------------------------------------------------------- */

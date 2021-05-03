@@ -26,18 +26,32 @@ class TFavoritesController extends AppController
     public function index()
     {
         $user_id = $this->Session->read('User.id');
-        $data = $this->request->getQuery('search_books');
+                // 検索データ取得
+        $inputName = $this->request->getQuery('search_books');
+        $inputGenre = $this->request->getQuery('genre');
+        $csv = $this->request->getQuery('csv');
+
         $this->paginate = [
             'sortableFields' => [
                 'id', 'TBooks.name', 'TBooks.book_no', 'TBooks.remain', 'TBooks.quantity', 'TBooks.id', 'TBooks.image'
             ],
-            'contain' => ['TBooks', 'MUsers'],
+            'contain' => ['TBooks', 'MUsers','TBooks.MGenres'],
         ];
-        if (!empty($data)) {
-            $tFavorites = $this->paginate($this->TFavorites->find()->where(['TBooks.name LIKE' => "%{$data}%", 'TFavorites.m_users_id' => $user_id]));
-        } else {
-            $tFavorites = $this->paginate($this->TFavorites->find()->where(['TFavorites.m_users_id' => $user_id]));
-        }
+               // 書籍名曖昧検索
+            if(!empty($inputName)){
+                $sqlName = $inputName;
+            } else {
+                $sqlName = '';
+            };
+
+        // ジャンル選択によりフィルタリング
+        if(!empty($inputGenre)){
+                    $id = explode(':',$inputGenre)[0];
+                    $tFavorites = $this->paginate($this->TFavorites->find('all')->where(['TFavorites.del_flg'=>0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'TFavorites.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
+                    }));
+            }else{
+                    $tFavorites = $this->paginate($this->TFavorites->find('all')->where(['TFavorites.del_flg'=>0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'TFavorites.m_users_id' => $user_id ]));
+           };
 
         $genres = $this->TFavorites->TBooks->MGenres->find();
 

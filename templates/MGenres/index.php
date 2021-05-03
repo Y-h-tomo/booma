@@ -5,6 +5,16 @@
  */
 $this->assign('title', 'Genre List : ジャンルリスト');
 
+$session = $this->getRequest()->getSession();
+if ($session->check('User.name')) {
+  $LoginName = $session->read('User.name');
+  $role = $session->read('User.role');
+  $user_id = $session->read('User.id');
+} else {
+  $LoginName = 'No login';
+  $role = '1';
+  $user_id = '';
+}
 ?>
 <div class="main-body">
   <div class="page-wrapper">
@@ -25,7 +35,9 @@ $this->assign('title', 'Genre List : ジャンルリスト');
               </p>
             </div>
             <div>
+              <?php if ($role == '3') : ?>
               <?= $this->Html->link(__('Add Genre - ジャンル登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-secondary']) ?>
+              <?php endif; ?>
             </div>
             <div class="card-header-right">
               <ul class="list-unstyled card-option">
@@ -53,7 +65,9 @@ $this->assign('title', 'Genre List : ジャンルリスト');
                     <th scope="row"><?= $this->Number->format($mGenre->id) ?></th>
                     <td><?= h($mGenre->genre) ?></td>
                     <td>
+                      <?php if ($role == '3') : ?>
                       <?= $this->Form->postLink(__('削除'), ['action' => 'delete', $mGenre->id], ['class' => 'btn btn-danger btn-sm', 'confirm' => __('書籍情報に影響が出る可能性があります。本当にジャンル：{0} を削除しますか?', $mGenre->genre)]) ?>
+                      <?php endif; ?>
                     </td>
                   </tr>
                   <?php endforeach; ?>

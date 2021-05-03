@@ -223,7 +223,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
 /* -------------------------------------------------------------------------- */ -->
 
           <!-- サイドメニュー -->
-          <nav class="pcoded-navbar">
+          <nav class="pcoded-navbar m-r-5">
             <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
             <div class="pcoded-inner-navbar main-menu">
               <div class="">
@@ -256,9 +256,10 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
                 </div>
               </div>
 
-              <!-- リンクメニュー -->
+              <!-- /* -------------------------------------------------------------------------- */
+                 /*                                ANCHOR 検索メニュー                               */
+                /* -------------------------------------------------------------------------- */ -->
 
-              <!-- ANCHOR 検索メニュー -->
               <?php if ( ( in_array($page, $book_page) && $action == 'index') ||  ($page == 'THistories' && $action == 'view')): ?>
 
               <div class="pcoded-navigation-label">Search</div>
@@ -307,6 +308,8 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
               </div>
               <?php endif; ?>
 
+              <!-- /* --------------------------------- ユーザー検索 -------------------------------- */ -->
+
               <?php if ($page == 'MUsers' && $action == 'index') : ?>
               <div class="p-15 p-b-0" id="js-search-user">
                 <form class="form-material" method="get">
@@ -332,8 +335,24 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
               </div>
               <?php endif; ?>
 
+              <!-- /* --------------------------------- ジャンル検索 --------------------------------- */ -->
 
-              <!-- ANCHOR リスト（アコーディオン） -->
+              <?php if ($page == 'MGenres' && $action == 'index') : ?>
+              <div class="p-15 p-b-0" id="js-search-user">
+                <form class="form-material" method="get">
+                  <div class="form-group form-primary">
+                    <input type="text" name="search_genres" class="form-control" v-model="name">
+                    <span class="form-bar"></span>
+                    <label class="float-label"><i class="fa fa-search m-r-10"></i>Search Genres:ジャンル名</label>
+                  </div>
+                  <input type="submit" class="btn btn-primary" value="検索">
+                  <button type="button" class="btn btn-outline-secondary" @click.prevent="reset">リセット</button>
+                </form>
+              </div>
+              <?php endif; ?>
+
+
+              <!-- ANCHOR マイメニューリスト（アコーディオン） -->
               <div class="pcoded-navigation-label">Navigation</div>
               <ul class="pcoded-item pcoded-left-item">
                 <li>
@@ -433,7 +452,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
                   <!-- /* -------------------------------------------------------------------------- */ -->
                   <?php endif; ?>
                 </li>
-                <li class="bg-dark">
+                <li class="bg-light">
                   <?php if ($tBook['remain'] < $tBook['quantity']) : ?>
                   <a href="#modal_r<?= $tBook['id'] ?>">返却</a>
                   <!-- /* --------------------------------- 返却モーダルエリア -------------------------------- */ -->

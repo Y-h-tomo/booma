@@ -59,38 +59,7 @@ class THistoriesController extends AppController
 
         /* -------------------------------- csv出力メソッド ------------------------------- */
         if($csv == 1){
-            $histories = $tHistories->toArray();
-            $csvBooks = [];
-            foreach($histories as $history){
-                $genres = '';
-                foreach($history->t_book->m_genres as $genre){
-                    $genres .= $genre->genre.',';
-                }
-                $history->t_book['genres'] = $genres;
-                $csvBooks[] = [
-                    $history->id,
-                    $history->t_book['image'],
-                    $history->t_book['name'],
-                    $history->t_book['book_no'],
-                    $history->t_book['genres'],
-                    $history->rental_time->i18nFormat('yyyy-MM-dd HH:mm:ss'),
-                    $history->t_book['remain'],
-                    $history->t_book['quantity'],
-                    $history->t_book['price'],
-                    $history->t_book['outline'],
-                ];
-            };
-            $data = $csvBooks;
-            $_serialize = ['data'];
-            $_header = [
-                'ID','画像名', '名前', '書籍No','ジャンル','最終レンタル日','在庫','登録冊数','価格','概要',
-            ];
-            $_csvEncoding = 'CP932';
-            $_newline = "\r\n";
-            $_eol = "\r\n";
-            $this->setResponse($this->getResponse()->withDownload('Books.csv'));
-            $this->viewBuilder()->setClassName('CsvView.Csv');
-            $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
+            $this->_csvIndexExport($tHistories);
         }
 
 
@@ -376,5 +345,43 @@ class THistoriesController extends AppController
             }
         }
         return $this->redirect(['controller' => 'TBooks', 'action' => 'index']);
+    }
+
+    /**
+     * csv出力メソッド
+     */
+    protected function _csvIndexExport($tHistories){
+        $histories = $tHistories->toArray();
+        $csvBooks = [];
+        foreach($histories as $history){
+            $genres = '';
+            foreach($history->t_book->m_genres as $genre){
+                $genres .= $genre->genre.',';
+            }
+            $history->t_book['genres'] = $genres;
+            $csvBooks[] = [
+                $history->id,
+                $history->t_book['image'],
+                $history->t_book['name'],
+                $history->t_book['book_no'],
+                $history->t_book['genres'],
+                $history->rental_time->i18nFormat('yyyy-MM-dd HH:mm:ss'),
+                $history->t_book['remain'],
+                $history->t_book['quantity'],
+                $history->t_book['price'],
+                $history->t_book['outline'],
+            ];
+        };
+        $data = $csvBooks;
+        $_serialize = ['data'];
+        $_header = [
+            'ID','画像名', '名前', '書籍No','ジャンル','最終レンタル日','在庫','登録冊数','価格','概要',
+        ];
+        $_csvEncoding = 'CP932';
+        $_newline = "\r\n";
+        $_eol = "\r\n";
+        $this->setResponse($this->getResponse()->withDownload('HistoryBooks.csv'));
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
     }
 }

@@ -29,7 +29,7 @@ $this->assign('title', 'User List : ユーザーリスト');
               </p>
             </div>
             <div>
-              <?= $this->Html->link(__('Add User - 新規登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-warning']) ?>
+              <?= $this->Html->link(__('Add User - ユーザー登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-warning']) ?>
             </div>
             <div class="card-header-right">
               <ul class="list-unstyled card-option">
@@ -62,7 +62,22 @@ $this->assign('title', 'User List : ユーザーリスト');
                     <td><?= h($mUser->name) ?></td>
                     <td><?= h($mUser->login_no) ?></td>
                     <td><?= h($mUser->email) ?></td>
-                    <td><?= $this->Number->format($mUser->role) ?></td>
+                    <?php switch($this->Number->format($mUser->role)){
+                      case 1:
+                        $roleName = '1：一般ユーザー' ;
+                        break;
+                              case 2:
+                                $roleName = '2：担当者' ;
+                                break;
+                              case 3:
+                                $roleName = '3：管理者' ;
+                                break;
+                                default:
+                                $roleName = '権限なし' ;
+                                break;
+                              }
+                              ?>
+                    <td><?= $roleName ?></td>
                     <td style="text-align:right;"><?= $this->Number->format($mUser->arrears) ?><span> 時間</span></td>
                     <td class="actions">
                       <!-- <#?= $this->Html->link(__('View'), ['action' => 'view', $mUser->id], ['class' => 'btn btn-view']) ?> -->

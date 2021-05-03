@@ -56,6 +56,7 @@ if ($session->check('User.name')) {
                     <th><span class="badge badge-light"><?= $this->Paginator->sort('TBooks.name', '書籍名') ?></span></th>
                     <th><span class="badge badge-light"><?= $this->Paginator->sort('TBooks.book_no', '書籍No') ?></span>
                     </th>
+                    <th><span><?= 'ジャンル' ?></span></th>
                     <th><span class="badge badge-light"><?= $this->Paginator->sort('rental_time', '最終レンタル日') ?></span>
                     </th>
                     <th><span class="badge badge-light"><?= $this->Paginator->sort('TBooks.remain', '残り冊数') ?></span>
@@ -74,6 +75,13 @@ if ($session->check('User.name')) {
                     </td>
                     <td><?= h($h['t_book']['name']) ?></td>
                     <td><?= h($h['t_book']['book_no']) ?></td>
+                    <td style="text-align:right;">
+                      <?php foreach ($h['t_book']['m_genres'] as $genre) : ?>
+                      <span class="badge badge-pill badge-primary ml-1">
+                        <?= h($genre['genre']) ?>
+                      </span>
+                      <?php endforeach; ?>
+                    </td>
                     <td style="text-align:right;"><?= $h['rental_time']->i18nFormat('yyyy-MM-dd HH:mm:ss'); ?></td>
                     <td style="text-align:right;"><?= $this->Number->format($h['t_book']['remain']) ?><span> 冊</span>
                     </td>

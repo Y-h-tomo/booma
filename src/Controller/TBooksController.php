@@ -59,41 +59,10 @@ class TBooksController extends AppController
 
          /* -------------------------------- csv出力メソッド ------------------------------- */
         if($csv == 1){
-            $books = $tBooks->toArray();
-            $csvBooks = [];
-            foreach($books as $book){
-                $genres = '';
-                foreach($book->m_genres as $genre){
-                    $genres .= $genre->genre.',';
-                }
-                $book['genres'] = $genres;
-                $csvBooks[] = [
-                    $book['id'],
-                    $book['image'],
-                    $book['name'],
-                    $book['book_no'],
-                    $book['genres'],
-                    $book['deadline'],
-                    $book['remain'],
-                    $book['quantity'],
-                    $book['price'],
-                    $book['outline'],
-                ];
-            };
-            $data = $csvBooks;
-            $_serialize = ['data'];
-            $_header = [
-                'ID','画像名', '名前', '書籍No','ジャンル','最大レンタル時間','在庫','登録冊数','価格','概要',
-            ];
-            $_csvEncoding = 'CP932';
-            $_newline = "\r\n";
-            $_eol = "\r\n";
-            $this->setResponse($this->getResponse()->withDownload('Books.csv'));
-            $this->viewBuilder()->setClassName('CsvView.Csv');
-            $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
+            $this->_csvExport($tBooks);
         }
 
-        $genres = $this->TBooks->MGenres->find();
+        $genres = $this->TBooks->MGenres->find()->where(['del_flg'=> 0]);
         $this->set(compact('genres'));
         $this->set(compact('tBooks'));
 
@@ -325,7 +294,7 @@ class TBooksController extends AppController
 
         /* ------------------------------- ジャンル情報取得 ------------------------------ */
 
-        $genres = $this->TBooks->MGenres->find();
+        $genres = $this->TBooks->MGenres->find()->where(['del_flg'=> 0]);
         $selectGenres = [];
         $beforeGenres = '';
         $mGenres = $tBook->m_genres;
@@ -652,10 +621,12 @@ class TBooksController extends AppController
         $genres = $tBook->genres;
         $tBookGenres = TableRegistry::getTableLocator()->get('TBookGenres');
         $tBookGenres->deleteAll(['t_books_id' => $tBook->id]);
+
         foreach ($genres as $key => $value) {
             $data = [
                 't_books_id' =>  $tBook->id,
-                'm_genres_id' => $value
+                'm_genres_id' => $value,
+                'del_flg' => false,
             ];
             $tBookGenre = $tBookGenres->newEntity($data);
             $tBookGenres->save($tBookGenre);
@@ -670,5 +641,43 @@ class TBooksController extends AppController
             $this->Flash->error(__('担当者以上の権限がありません'));
             return $this->redirect(['controller' => 'TBooks', 'action' => 'index']);
         }
+    }
+
+    /**
+     * csv出力メソッド
+     */
+    protected function _csvExport($tBooks){
+        $books = $tBooks->toArray();
+        $csvBooks = [];
+        foreach($books as $book){
+            $genres = '';
+            foreach($book->m_genres as $genre){
+                $genres .= $genre->genre.',';
+            }
+            $book['genres'] = $genres;
+            $csvBooks[] = [
+                $book['id'],
+                $book['image'],
+                $book['name'],
+                $book['book_no'],
+                $book['genres'],
+                $book['deadline'],
+                $book['remain'],
+                $book['quantity'],
+                $book['price'],
+                $book['outline'],
+            ];
+        };
+        $data = $csvBooks;
+        $_serialize = ['data'];
+        $_header = [
+            'ID','画像名', '名前', '書籍No','ジャンル','最大レンタル時間','在庫','登録冊数','価格','概要',
+        ];
+        $_csvEncoding = 'CP932';
+        $_newline = "\r\n";
+        $_eol = "\r\n";
+        $this->setResponse($this->getResponse()->withDownload('Books.csv'));
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
     }
 }

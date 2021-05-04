@@ -62,7 +62,7 @@ class TBooksController extends AppController
             $this->_csvExport($tBooks);
         }
 
-        $genres = $this->TBooks->MGenres->find()->where(['del_flg'=> 0]);
+        $genres = $this->TBooks->MGenres->find();
         $this->set(compact('genres'));
         $this->set(compact('tBooks'));
 

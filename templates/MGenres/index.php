@@ -61,15 +61,43 @@ if ($session->check('User.name')) {
                 </thead>
                 <tbody>
                   <?php foreach ($mGenres as $mGenre) : ?>
+                  <?php if($mGenre->del_flg): ?>
+                  <tr>
+                    <th scope="row"><?= $this->Number->format($mGenre->id) ?></th>
+                    <td class="text-white bg-secondary"><?= h($mGenre->genre) ?><br><span>OFFのため、登録/編集に使用できません。</span>
+                    </td>
+                    <td>
+                      <?php if ($role == '3') : ?>
+                      <a href="#modal_b"><button type="button" class="btn btn-outline-success btn-sm">ON</button></a>
+
+                      <div class="remodal col" data-remodal-id="modal_b">
+                        <p>書籍管理に影響が出る可能性があります。本当にジャンル：<?= $mGenre->genre ?> をONしますか?</p>
+                        <?= $this->Form->postButton(__('ON'), ['action' => 'edit', $mGenre->id],
+                      ['class' => 'btn btn-outline-success mb-5']) ?>
+                        <button data-remodal-action="cancel" class="remodal-cancel btn">閉じる</button>
+                      </div>
+
+                      <?php endif; ?>
+                    </td>
+                  </tr>
+                  <?php else: ?>
                   <tr>
                     <th scope="row"><?= $this->Number->format($mGenre->id) ?></th>
                     <td><?= h($mGenre->genre) ?></td>
                     <td>
                       <?php if ($role == '3') : ?>
-                      <?= $this->Form->postLink(__('削除'), ['action' => 'delete', $mGenre->id], ['class' => 'btn btn-danger btn-sm', 'confirm' => __('書籍情報に影響が出る可能性があります。本当にジャンル：{0} を削除しますか?', $mGenre->genre)]) ?>
+                      <a href="#modal_b"><button type="button" class="btn btn-outline-danger btn-sm">OFF</button></a>
+
+                      <div class="remodal col" data-remodal-id="modal_b">
+                        <p>書籍管理に影響が出る可能性があります。本当にジャンル：<?= $mGenre->genre ?> をOFFしますか?</p>
+                        <?= $this->Form->postButton(__('OFF'), ['action' => 'delete', $mGenre->id],
+                      ['class' => 'btn btn-outline-danger mb-5']) ?>
+                        <button data-remodal-action="cancel" class="remodal-cancel btn">閉じる</button>
+                      </div>
                       <?php endif; ?>
                     </td>
                   </tr>
+                  <?php endif; ?>
                   <?php endforeach; ?>
                 </tbody>
               </table>

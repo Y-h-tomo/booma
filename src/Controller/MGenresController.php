@@ -32,7 +32,7 @@ class MGenresController extends AppController
             } else {
                 $sqlName = '';
             };
-        $mGenres = $this->paginate($this->MGenres->find()->where(['del_flg'=> 0,'genre LIKE' => "%{$sqlName}%"]));
+        $mGenres = $this->paginate($this->MGenres->find()->where(['genre LIKE' => "%{$sqlName}%"]));
 
         $this->set(compact('mGenres'));
     }
@@ -75,17 +75,16 @@ class MGenresController extends AppController
                //コミット
                $connection->commit();
                 $this->Flash->success(__('ジャンル登録に成功しました。'));
+                return $this->redirect(['action' => 'index']);
                 }
             } catch (\Exception $e) {
              // ロールバック
                $connection->rollback();
-                return $this->redirect(['action' => 'index']);
                $this->Flash->error(__('ジャンル登録に失敗しました。'));
+                return $this->redirect(['action' => 'index']);
            }
+        }
         $this->set(compact('mGenre'));
-    }
-        $this->Flash->error(__('アクセスエラーが発生しました'));
-        return $this->redirect(['action' => 'index']);
 }
 
     /**
@@ -95,22 +94,35 @@ class MGenresController extends AppController
      * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    // public function edit($id = null)
-    // {
-    //     $mGenre = $this->MGenres->get($id, [
-    //         'contain' => [],
-    //     ]);
-    //     if ($this->request->is(['patch', 'post', 'put'])) {
-    //         $mGenre = $this->MGenres->patchEntity($mGenre, $this->request->getData());
-    //         if ($this->MGenres->save($mGenre)) {
-    //             $this->Flash->success(__('The m genre has been saved.'));
+    public function edit($id = null)
+    {
+        $this->userValid();
 
-    //             return $this->redirect(['action' => 'index']);
-    //         }
-    //         $this->Flash->error(__('The m genre could not be saved. Please, try again.'));
-    //     }
-    //     $this->set(compact('mGenre'));
-    // }
+        $mGenre = $this->MGenres->get($id);
+        if ($this->request->allowMethod(['post', 'delete'])) {
+           // トランザクション
+        $connection = ConnectionManager::get('default');
+        $connection->begin();
+        try {
+            $mGenre = $this->MGenres->patchEntity(
+                $mGenre,
+                ['del_flg' => 0]
+            );
+            if ($this->MGenres->save($mGenre)) {
+                      //   コミット
+                $connection->commit();
+                $this->Flash->success(__('ジャンルをONしました。'));
+                return $this->redirect(['action' => 'index']);
+            }
+        } catch (\Exception $e) {
+            // ロールバック
+            $connection->rollback();
+                $this->Flash->error(__('ジャンルのONに失敗しました。'));
+                return $this->redirect(['action' => 'index']);
+
+            }
+        }
+    }
 
     /**
      * Delete method
@@ -122,6 +134,11 @@ class MGenresController extends AppController
     public function delete($id = null)
     {
         $this->userValid();
+
+        if ($this->request->is('get')) {
+            // GETアクセスだった場合の処理（→500とか出せばいい感じ？）
+            throw new InternalErrorException('投稿の削除に失敗しました');
+        }
 
         $mGenre = $this->MGenres->get($id);
         if ($this->request->allowMethod(['post', 'delete'])) {
@@ -136,16 +153,18 @@ class MGenresController extends AppController
             if ($this->MGenres->save($mGenre)) {
                       //   コミット
                 $connection->commit();
-                $this->Flash->success(__('ジャンルの削除に成功しました。'));
+                $this->Flash->success(__('ジャンルをOFFしました。'));
+                return $this->redirect(['action' => 'index']);
+
             }
         } catch (\Exception $e) {
             // ロールバック
             $connection->rollback();
-                $this->Flash->error(__('ジャンルの削除に失敗しました。'));
+                $this->Flash->error(__('ジャンルのONに失敗しました。'));
+                return $this->redirect(['action' => 'index']);
+
             }
         }
-        $this->Flash->error(__('アクセスエラーが発生しました'));
-        return $this->redirect(['action' => 'index']);
     }
         /* -------------------------------------------------------------------------- */
     /*ANCHOR                                  カスタムメソッド                                  */

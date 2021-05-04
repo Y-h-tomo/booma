@@ -137,7 +137,7 @@ $options = array(
           </div>
         </div>
         <input type="hidden" name="del_flg" value="0">
-        <?= $this->Form->button('Confirm - 確認', ['type' => 'submit', 'class' => 'btn btn-primary']) ?>
+        <?= $this->Form->button('Confirm - 確認', ['type' => 'submit', 'class' => 'btn btn-info']) ?>
         <?= $this->Form->end() ?>
       </div>
     </div>

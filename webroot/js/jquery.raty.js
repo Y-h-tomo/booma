@@ -45,9 +45,9 @@
         scoreName: "score",
         single: false,
         space: true,
-        starHalf: "/haraguchi/bma/webroot/images/star-half.png",
-        starOff: "/haraguchi/bma/webroot/images/star-off.png",
-        starOn: "/haraguchi/bma/webroot/images/star-on.png",
+        starHalf: "/images/star-half.png",
+        starOff: "/images/star-off.png",
+        starOn: "/images/star-on.png",
         starType: "img",
         target: undefined,
         targetFormat: "{score}",
@@ -133,7 +133,10 @@
                 for (var i = 0; i < this.opt.number; i++) {
                     var group = this.opt.hints[i];
 
-                    if (Object.prototype.toString.call(group) !== "[object Array]") {
+                    if (
+                        Object.prototype.toString.call(group) !==
+                        "[object Array]"
+                    ) {
                         group = [group];
                     }
 
@@ -153,7 +156,11 @@
             },
 
             _adjustNumber: function() {
-                this.opt.number = this._between(this.opt.number, 1, this.opt.numberMax);
+                this.opt.number = this._between(
+                    this.opt.number,
+                    1,
+                    this.opt.numberMax
+                );
             },
 
             _adjustPrecision: function() {
@@ -172,7 +179,10 @@
                 this.opt.path = "";
 
                 for (var i = 0; i < replaces.length; i++) {
-                    this.opt[replaces[i]] = this.opt[replaces[i]].replace(".", "-");
+                    this.opt[replaces[i]] = this.opt[replaces[i]].replace(
+                        ".",
+                        "-"
+                    );
                 }
             },
 
@@ -191,7 +201,10 @@
 
             _attributesForIndex: function(i) {
                 var name = this._nameForIndex(i);
-                var attributes = { alt: i, src: this.opt.path + this.opt[name] };
+                var attributes = {
+                    alt: i,
+                    src: this.opt.path + this.opt[name],
+                };
 
                 if (this.opt.starType !== "img") {
                     attributes = { "data-alt": i, class: this.opt[name] };
@@ -239,7 +252,10 @@
                     }
 
                     if (that.opt.click) {
-                        execute = that.opt.click.call(that.element, +score, evt);
+                        execute = that.opt.click.call(
+                            that.element, +score,
+                            evt
+                        );
                     }
 
                     if (execute || execute === undefined) {
@@ -304,7 +320,9 @@
             // TODO: model spec
             _bindOver: function() {
                 var that = this;
-                var action = that.opt.half ? "mousemove.raty" : "mouseover.raty";
+                var action = that.opt.half ?
+                    "mousemove.raty" :
+                    "mouseover.raty";
 
                 this.stars.on(action, function(evt) {
                     var score = that._getScoreByPosition(evt, this);
@@ -391,14 +409,18 @@
             _createScore: function() {
                 var score = $(this.opt.targetScore);
 
-                this.scoreField = score.length ? score : this._buildScoreField();
+                this.scoreField = score.length ?
+                    score :
+                    this._buildScoreField();
             },
 
             _createStars: function() {
                 for (var i = 1; i <= this.opt.number; i++) {
                     var attributes = this._attributesForIndex(i);
 
-                    $("<" + this.opt.starType + " />", attributes).appendTo(this.element);
+                    $("<" + this.opt.starType + " />", attributes).appendTo(
+                        this.element
+                    );
 
                     if (this.opt.space && i < this.opt.number) {
                         this.self.append("&#160;");
@@ -447,7 +469,10 @@
                     var star = this.stars[i - 1];
                     var turnOn = this._turnOn(i, score);
 
-                    if (this.opt.iconRange && this.opt.iconRange.length > hash) {
+                    if (
+                        this.opt.iconRange &&
+                        this.opt.iconRange.length > hash
+                    ) {
                         var irange = this.opt.iconRange[hash];
 
                         icon = this._getRangeIcon(irange, turnOn);
@@ -491,11 +516,16 @@
 
             // TODO: model spec
             _getScoreByPosition: function(evt, icon) {
-                var score = parseInt(icon.alt || icon.getAttribute("data-alt"), 10);
+                var score = parseInt(
+                    icon.alt || icon.getAttribute("data-alt"),
+                    10
+                );
 
                 if (this.opt.half) {
                     var size = this._getWidth();
-                    var percent = parseFloat((evt.pageX - $(icon).offset().left) / size);
+                    var percent = parseFloat(
+                        (evt.pageX - $(icon).offset().left) / size
+                    );
 
                     score = score - 1 + percent;
                 }
@@ -533,7 +563,8 @@
             // TODO: model spec
             _getWidth: function() {
                 var width =
-                    this.stars[0].width || parseFloat(this.stars.eq(0).css("font-size"));
+                    this.stars[0].width ||
+                    parseFloat(this.stars.eq(0).css("font-size"));
 
                 if (!width) {
                     this._error("Could not get the icon width!");
@@ -560,7 +591,9 @@
             },
 
             _nameForIndex: function(i) {
-                return this.opt.score && this.opt.score >= i ? "starOn" : "starOff";
+                return this.opt.score && this.opt.score >= i ?
+                    "starOn" :
+                    "starOff";
             },
 
             // TODO: model spec
@@ -611,7 +644,9 @@
             // TODO: model spec
             _setTarget: function(target, score) {
                 if (score) {
-                    score = this.opt.targetFormat.toString().replace("{score}", score);
+                    score = this.opt.targetFormat
+                        .toString()
+                        .replace("{score}", score);
                 }
 
                 if (target.is(":input")) {
@@ -670,7 +705,9 @@
                     if (score === undefined) {
                         score = this.opt.targetText;
                     } else if (score === null) {
-                        score = mouseover ? this.opt.cancelHint : this.opt.targetText;
+                        score = mouseover ?
+                            this.opt.cancelHint :
+                            this.opt.targetText;
                     } else {
                         if (this.opt.targetType === "hint") {
                             score = this._getHint(score, evt);
@@ -727,7 +764,11 @@
                     this._apply(score);
 
                     if (this.opt.click) {
-                        this.opt.click.call(this.element, score, $.Event("click"));
+                        this.opt.click.call(
+                            this.element,
+                            score,
+                            $.Event("click")
+                        );
                     }
 
                     this._target(score);
@@ -773,7 +814,10 @@
             readOnly: function(readonly) {
                 if (this.self.data("readonly") !== readonly) {
                     if (readonly) {
-                        this.self.off(".raty").children(this.opt.starType).off(".raty");
+                        this.self
+                            .off(".raty")
+                            .children(this.opt.starType)
+                            .off(".raty");
 
                         this._lock();
                     } else {

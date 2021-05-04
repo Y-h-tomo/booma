@@ -79,19 +79,33 @@ class TBooksController extends AppController
     {
 
         $tBook = $this->TBooks->get($id, [
-            'contain' => ['MGenres', 'TFavorites'],
+            'contain' => ['MGenres', 'TFavorites','TScores'],
             ]);
 
+            // ジャンル整理
             $genres = [];
             $mGenres = $tBook->m_genres;
             foreach ($mGenres as $genre) {
                 $genres[] = $genre->genre;
             }
+            // ユーザーログイン時　お気に入り登録ボタンおよび星評価機能を表示
             if($this->Session->read('User.id')){
                 $user_id = $this->Session->read('User.id');
-                $tFavorites = $this->TBooks->TFavorites->find('list')->where(['TFavorites.t_books_id' => $tBook['id'], 'TFavorites.del_flg' => 0, 'TFavorites.m_users_id' => $user_id]);
+                $tFavorites = $this->TBooks->TFavorites->find()->where(['TFavorites.t_books_id' => $tBook['id'], 'TFavorites.del_flg' => 0, 'TFavorites.m_users_id' => $user_id])->first();
                 $this->set(compact('tFavorites'));
+
+                $tScores =  $this->TBooks->TScores->find()->where(['TScores.t_books_id' => $tBook['id'], 'TScores.del_flg' => 0, 'TScores.m_users_id' => $user_id])->first();
+
+                if(!empty($tScores)){
+                    $this->set(compact('tScores'));
+                }
             }
+
+        // 書籍の平均評価表示
+        $avgQuery =  $this->TBooks->TScores->find()->where(['TScores.t_books_id' => $tBook['id'], 'TScores.del_flg' => 0]);
+        $avgScore = $avgQuery->select(['avg' => $avgQuery->func()->avg('score')])->toArray()[0];
+
+        $this->set(compact('avgScore'));
         $this->set(compact('genres'));
         $this->set(compact('tBook'));
     }
@@ -172,7 +186,7 @@ class TBooksController extends AppController
         }
 
         // ジャンル情報取得
-        $genres = $this->TBooks->MGenres->find();
+        $genres = $this->TBooks->MGenres->find()->where(['del_flg' => 0]);
 
         //TODO 書籍No重複の事前確認
         // $allBooks = ($this->TBooks->find()->all())->toArray();

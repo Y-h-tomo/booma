@@ -19,7 +19,6 @@ if ($session->check('User.name')) {
 }
 
 
-// debug($tBook);
 ?>
 <div class="row">
   <div class="col-sm-12">
@@ -75,9 +74,10 @@ if ($session->check('User.name')) {
           </div>
         </div>
 
-        <?php if ($user_id) : ?>
+        <!-- /* ------------------------------ ANCHOR お気に入り登録 ----------------------------- */ -->
 
-        <?php if (empty($tFavorites->toArray())) {
+        <?php if ($user_id) : ?>
+        <?php if (empty($tFavorites)) {
                         $on = "";
                         $off = "invisible";
                     } else {
@@ -85,15 +85,16 @@ if ($session->check('User.name')) {
                         $off = "";
                     } ?>
         <div class="form-group row">
+          <label class="col-sm-2 col-form-label">Favorite : <br>お気に入り登録</label>
           <div class="col-sm-4">
             <button id="favorite-btn" class="btn <?= $on ?> btn-info"><i
                 class="fas fa-bookmark favorite-icon"></i><span>登録</span></button>
-            <button id="un-favorite-btn" class="btn <?= $off ?> btn-outline-info"><i
+            <button id="un-favorite-btn" class="btn <?= $off ?> btn-outline-secondary"><i
                 class="far fa-bookmark favorite-icon"></i><span>解除</span></button>
           </div>
         </div>
-
         <script type="text/javascript">
+        // お気に入り登録
         $('#favorite-btn').click(function() {
           var $this = $('.favorite-icon');
           var click = true;
@@ -123,6 +124,7 @@ if ($session->check('User.name')) {
             });
           }
         });
+        // お気に入り解除
         $('#un-favorite-btn').click(function() {
           var $this = $('.favorite-icon');
           var click = true;
@@ -145,9 +147,8 @@ if ($session->check('User.name')) {
               $('#favorite-btn').removeClass('invisible');
               $('#un-favorite-btn').addClass('invisible');
               click = true;
-              // alert('OK');
             }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
-              // alert("NG");
+              alert("評価処理に失敗しました。");
               console.log("XMLHttpRequest : " + XMLHttpRequest.status);
               console.log("textStatus     : " + textStatus);
               console.log("errorThrown    : " + errorThrown.message);
@@ -155,9 +156,125 @@ if ($session->check('User.name')) {
           }
         });
         </script>
-
         <?php endif; ?>
 
+        <!-- /* ---------------------------------- ANCHOR 評価機能 ---------------------------------- */ -->
+
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label">Scores : <br>評価</label>
+          <div class="col-sm-5">
+            <p>平均評価 （<span class="js-score-count"><?= count($tBook->t_scores) ?></span>）件</p>
+            <div class="js-score-avg"></div>
+            <span class="js-score-avg-point"><?php printf("%03.2f",$avgScore['avg']) ?></span><span>点</span>
+          </div>
+          <div class="col-sm-5">
+            <!-- 評価の有無でadd edit 分岐 -->
+            <?php if ($user_id) : ?>
+            <p>あなたの現在評価</p>
+            <?php if(!empty($tScores)): ?>
+            <div id="<?= $tScores['id'] ?>" class="raty raty<?= $tScores['id'] ?>">
+            </div>
+            <span class="js-score-my-point"><?php printf("%03.2f",$tScores['score']) ?></span><span>点</span>
+            <?php else: ?>
+            <div id="new" class="raty raty-new"></div>
+            <p>現在評価していません。<br>初回評価時はリロードが発生します。</p>
+            <?php endif; ?>
+            <?php endif; ?>
+          </div>
+        </div>
+        <script type="text/javascript">
+        score = $('.js-score-avg').html();
+        $('.js-score-avg').raty({
+          readOnly: true,
+          score: <?= $avgScore['avg'] ?>
+        });
+        </script>
+        <?php if ($user_id) : ?>
+        <!-- 評価の有無でadd edit 分岐 -->
+        <?php if(!empty($tScores)): ?>
+        <script type="text/javascript">
+        var $score = $('.js-score-avg');
+        var $count = $('.js-score-count');
+        var $avgPoint = $('.js-score-avg-point');
+        var $myPoint = $('.js-score-my-point');
+        var click = true;
+        $("div.raty<?= $tScores['id'] ?>").raty({
+          score: <?= $tScores['score'] ?>,
+          click: function(score, evt) {
+            if (click) {
+              click = false;
+              $.ajax({
+                url: "/t-scores/edit/",
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  id: <?= $tScores['id']  ?>,
+                  m_users_id: <?= $tScores['m_users_id'] ?>,
+                  t_books_id: <?= $tScores['t_books_id'] ?>,
+                  score: score
+                }),
+              }).done(function(data) {
+                $avgPoint.html('').prepend(Number(data).toFixed(2));
+                $myPoint.html('').prepend(Number(score).toFixed(2));
+                $score.html('').raty({
+                  readOnly: true,
+                  score: data
+                });
+                click = true;
+              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("評価処理に失敗しました。");
+                console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                console.log("textStatus     : " + textStatus);
+                console.log("errorThrown    : " + errorThrown.message);
+              });
+            }
+          }
+        });
+        </script>
+        <?php else: ?>
+        <script type="text/javascript">
+        var $score = $('.js-score-avg');
+        var $count = $('.js-score-count');
+        var $avgPoint = $('.js-score-avg-point');
+        var $myPoint = $('.js-score-my-point');
+        var click = true;
+        $('div.raty-new').raty({
+          score: 0,
+          click: function(score, evt) {
+            if (click) {
+              click = false;
+              $.ajax({
+                url: "/t-scores/add/",
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                  m_users_id: <?= $user_id ?>,
+                  t_books_id: <?= h($tBook['id']) ?>,
+                  score: score
+                }),
+              }).done(function(data) {
+                $avgPoint.html('').prepend(Number(data).toFixed(2));
+                $myPoint.html('').prepend(Number(score).toFixed(2));
+                $score.html('').raty({
+                  readOnly: true,
+                  score: data
+                });
+                click = true;
+              }).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+                alert("評価処理に失敗しました。");
+                console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                console.log("textStatus     : " + textStatus);
+                console.log("errorThrown    : " + errorThrown.message);
+              });
+            }
+            location.reload();
+          }
+        });
+        </script>
+        <?php endif; ?>
+        <?php endif; ?>
+
+        <!-- /* ----------------------------------- ANCHOR 概要 ----------------------------------- */ -->
         <div class="form-group row">
           <label class="col-sm-2 col-form-label">Outline : <br>概要</label>
           <div class="col-sm-10">

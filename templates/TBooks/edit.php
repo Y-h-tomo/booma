@@ -163,7 +163,7 @@ $options = array(
         </div>
         <input type="hidden" name="del_flg" value="0">
         <input type="hidden" name="version" value="<?= $tBook['modified']->i18nFormat('yyyy-MM-dd HH:mm:ss') ?>">
-        <?= $this->Form->button('Confirm - 確認', ['type' => 'submit', 'class' => 'btn btn-primary']) ?>
+        <?= $this->Form->button('Confirm - 確認', ['type' => 'submit', 'class' => 'btn btn-info']) ?>
         <?= $this->Form->end() ?>
       </div>
     </div>

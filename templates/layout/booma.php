@@ -75,6 +75,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.raty.js"></script>
 
 </head>
 
@@ -611,7 +612,7 @@ $query = $this->request->getServerParams()['QUERY_STRING'];
     <!-- スクラッチ開発分載せ替え -->
     <script type="text/javascript" src="/js/remodal.min.js"></script>
     <script type="text/javascript" src="/js/main.js"></script>
-    <script type="text/javascript" src="/js/jquery.raty.js"></script>
+
     <script type="text/javascript" src="/js/preview.js"></script>
 
 </body>

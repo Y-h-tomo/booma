@@ -36,7 +36,7 @@ if ($session->check('User.name')) {
             </div>
             <div>
               <?php if ($role == '3') : ?>
-              <?= $this->Html->link(__('Add Genre - ジャンル登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-secondary']) ?>
+              <?= $this->Html->link(__('Add Genre - ジャンル登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-primary']) ?>
               <?php endif; ?>
             </div>
             <div class="card-header-right">

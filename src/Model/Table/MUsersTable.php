@@ -46,11 +46,15 @@ class MUsersTable extends Table
 
         $this->addBehavior('Timestamp');
         $this->hasMany('THistories', [
-            'foreignKey' => 'id',
+            'foreignKey' => 'm_users_id',
             'joinType' => 'INNER',
         ]);
         $this->hasMany('TFavorites', [
-            'foreignKey' => 'id',
+            'foreignKey' => 'm_users_id',
+            'joinType' => 'INNER',
+        ]);
+        $this->hasMany('TScores', [
+            'foreignKey' => 'm_users_id',
             'joinType' => 'INNER',
         ]);
     }

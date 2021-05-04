@@ -29,7 +29,7 @@ $this->assign('title', 'User List : ユーザーリスト');
               </p>
             </div>
             <div>
-              <?= $this->Html->link(__('Add User - ユーザー登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-warning']) ?>
+              <?= $this->Html->link(__('Add User - ユーザー登録'), ['action' => 'add'], ['class' => 'btn float-right btn-outline-primary']) ?>
             </div>
             <div class="card-header-right">
               <ul class="list-unstyled card-option">

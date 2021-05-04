@@ -68,6 +68,10 @@ class TBooksTable extends Table
             'foreignKey' =>  't_books_id',
             'joinType' => 'INNER',
         ]);
+        $this->hasMany('TScores', [
+            'foreignKey' =>  't_books_id',
+            'joinType' => 'INNER',
+        ]);
     }
 
     /**

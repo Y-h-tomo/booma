@@ -104,7 +104,7 @@ $this->disableAutoLayout();
           <?= $this->Flash->render() ?>
           <?= $this->Form->create(null, ['class' => 'md-float-material form-material']) ?>
           <div class="text-center">
-            <img src="/assets/images/booma-logo.png" alt="logo.png">
+            <img src="/assets/images/booma-logo.png" alt="booma-logo.png">
             <legend>Books Management App
             </legend>
           </div>

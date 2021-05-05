@@ -238,8 +238,8 @@ return [
             /*
              * It is recommended to set these options through your environment or app_local.php
              */
-            //'username' => null,
-            //'password' => null,
+            // 'username' => null,
+            // 'password' => null,
             // 'client' => null,
             // 'tls' => false,
             // 'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
@@ -271,8 +271,8 @@ return [
             /*
              * Will by default be set to config value of App.encoding, if that exists otherwise to UTF-8.
              */
-            //'charset' => 'utf-8',
-            //'headerCharset' => 'utf-8',
+            'charset' => 'utf-8',
+            'headerCharset' => 'utf-8',
         ],
     ],
 

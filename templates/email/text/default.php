@@ -18,8 +18,3 @@
 echo "書籍管理アプリケーション Booma のテストメールです。\n";
 echo "\n";
 echo "下記の書籍レンタルにおいて、返却期限が24時間を切りましたのでご連絡致します。\n";
-echo $this->Url->build([
-    "controller" => "users",
-    "action" => "send-email",
-    "?" => ["token" => $token],
-], ['fullBase' => true])."\n";

@@ -34,7 +34,7 @@ $options = array(
           <label class="col-sm-2 col-form-label">BookGenres：<br>書籍ジャンル</label>
           <div class="col-sm-10">
             <?php foreach (($tBook['genres_name']) as $genre) : ?>
-              <span class="badge badge-pill badge-primary ml-1"> <?= h($genre) ?></span>
+            <span class="badge badge-pill badge-primary ml-1"> <?= h($genre) ?></span>
             <?php endforeach; ?>
           </div>
         </div>
@@ -51,10 +51,9 @@ $options = array(
           </div>
         </div>
         <div class="form-group row">
-          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル時間</label>
+          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル期間</label>
           <div class="col-sm-10">
-            <h5><?= h($tBook['deadline']) ?><span>時間</span></h5>
-            <p>約：<?= round((h($tBook['deadline'] / 24)), 2); ?><span>日</span></p>
+            <h5><?= round((h($tBook['deadline'] / 24)), 2); ?><span>日</span></h5>
           </div>
         </div>
         <div class="control-group">
@@ -71,7 +70,7 @@ $options = array(
             <?= nl2br(h($tBook['outline'])) ?>
           </div>
         </div>
-        <?= $this->Form->postButton('Register - 登録する', ['controller' => 'TBooks', 'action' => 'add_exec'], ['class' => 'btn btn-outline-primary']) ?>
+        <?= $this->Form->postButton('Register - 登録する', ['controller' => 'TBooks', 'action' => 'add_exec'], ['class' => 'btn btn-primary']) ?>
         <?= $this->Html->link(__('Back - 戻る'), ['action' => 'add'], ['type' => 'button', 'class' => 'button btn btn-outline-dark']) ?>
       </div>
     </div>

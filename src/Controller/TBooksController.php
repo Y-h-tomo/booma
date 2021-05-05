@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\NotFoundException;
@@ -268,6 +269,7 @@ class TBooksController extends AppController
 
                     //   コミット
                     $connection->commit();
+
                     $this->Flash->success(__('書籍情報の登録に成功しました'));
                     $this->Session->delete('book');
                     return $this->redirect(['action' => 'view', $tBook['id']]);
@@ -522,6 +524,7 @@ class TBooksController extends AppController
                 ['del_flg' => 1]
             );
             if ($this->TBooks->save($tBook)) {
+                unlink("/var/www/html/booma/webroot/img/{$tBook['image']}");
                 $this->Flash->success(__('書籍の削除に成功しました。'));
             } else {
                 $this->Flash->error(__('書籍の削除に失敗しました。'));

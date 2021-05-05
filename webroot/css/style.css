@@ -101,7 +101,7 @@ button.btn {
     height: 20px;
     background-size: contain;
     vertical-align: middle;
-    background-image: url("/img/caret-up-solid.svg");
+    background-image: url("/images/caret-up-solid.svg");
     color: #000;
 }
 
@@ -112,7 +112,7 @@ button.btn {
     height: 20px;
     background-size: contain;
     vertical-align: middle;
-    background-image: url("/img/caret-down-solid.svg");
+    background-image: url("/images/caret-down-solid.svg");
     color: #000;
 }
 

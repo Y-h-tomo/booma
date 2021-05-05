@@ -104,36 +104,34 @@ $options = array(
             <?= $this->Form->control('price', ['class' => 'form-control', 'maxLength' => '10', 'type' => 'hidden', 'v-bind:disabled' => "inputDisabled", '@change' => "validate_price"]); ?>
           </div>
         </div>
+
         <div class="form-group row" id="js-deadline">
-          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル時間</label>
+          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル期間</label>
           <div class="col-sm-2">
             <div v-show="deadline">
-              <span v-for="d in deadline" class="h4">{{ d }}</span>
-              <span>時間</span>
-              <div>
-                <span v-show="deadline">計＝{{ day }}日</span>
-              </div>
+              <span v-show="deadline" class="h4">{{ day }}</span>
+              <span>日</span>
             </div>
             <div v-show="!deadline">
-              <span class="h4"><?= h($tBook['deadline']) ?></span>
-              <span>時間</span>
+              <span class="h4"><?= h($tBook['deadline']/24) ?></span>
+              <span>日</span>
             </div>
           </div>
           <div class="col-sm-8">
-            <div class="btn-group" role="group">
-              <span v-for="number in numbers"><button @click.prevent="num(number)" v-bind:disabled="isDisabled"
-                  type="button" class="btn btn-light btn-sm">{{ number }}</button>
-              </span>
-            </div>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='threeDays'
+              v-bind:disabled="inputDisabled">3days</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='oneWeek'
+              v-bind:disabled="inputDisabled">1week</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='twoWeek'
+              v-bind:disabled="inputDisabled">2week</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='threeWeek'
+              v-bind:disabled="inputDisabled">3week</button>
             <button type="button" class="btn btn-info btn-sm" @click.prevent='clear'>再選択</button>
-            <button type="button" class="btn-dark btn btn-sm" @click.prevent='week'
-              v-bind:disabled="inputDisabled">1週間</button>
-            <button type="button" class="btn-dark btn btn-sm" @click.prevent='twoWeek'
-              v-bind:disabled="inputDisabled">2週間</button>
           </div>
           <input type="hidden" name="deadline" :value="deadline" class="form-control">
           <?= $this->Form->control('deadline', ['class' => 'form-control', 'type' => 'hidden', 'v-bind:disabled' => "inputDisabled"]); ?>
         </div>
+
         <div class="form-group row" id="js-image">
           <label class="col-sm-2 col-form-label control-label" for="fileInput">Image：<br>書籍画像</label>
           <div class="col-sm-10 controls">

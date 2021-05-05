@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
+use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\NotFoundException;
@@ -167,6 +167,35 @@ class MUsersController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+
+    public function sendEmail($id = null){
+
+        $mailer = new Mailer();
+        $mailer->setEmailFormat('text')
+                ->setTo('toのメールアドレスをここに入れる')
+                ->setFrom(['fromのメールアドレスをここに入れる' => 'fromの名前をここに入れる'])
+                ->setSubject('件名をここに入れる')
+                ->viewBuilder()
+                    ->setTemplate('user_added')
+                    ->setVar("token", $token);
+
+        $mailer->deliver();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

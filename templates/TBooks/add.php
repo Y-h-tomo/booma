@@ -96,25 +96,23 @@ $options = array(
           </div>
         </div>
         <div class="form-group row" id="js-deadline">
-          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル時間</label>
+          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル期間</label>
           <div class="col-sm-2">
             <div>
-              <span v-for="d in deadline" class="h4">{{ d }}</span>
-              <span>時間</span>
+              <span v-show="day" class="h4">{{ day }}</span>
+              <span>日</span>
             </div>
-            <span v-show="deadline">約:{{ day }}日</span>
           </div>
           <div class="col-sm-8">
-            <div class="btn-group" role="group">
-              <span v-for="number in numbers"><button @click.prevent="num(number)" v-bind:disabled="isDisabled"
-                  type="button" class="btn btn-light btn-sm">{{ number }}</button>
-              </span>
-            </div>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='threeDays'
+              v-bind:disabled="inputDisabled">3days</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='oneWeek'
+              v-bind:disabled="inputDisabled">1week</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='twoWeek'
+              v-bind:disabled="inputDisabled">2week</button>
+            <button type="button" class="btn-outline-dark btn btn-sm" @click.prevent='threeWeek'
+              v-bind:disabled="inputDisabled">3week</button>
             <button type="button" class="btn btn-info btn-sm" @click.prevent='clear'>再選択</button>
-            <button type="button" class="btn-dark btn btn-sm" @click.prevent='week'
-              v-bind:disabled="inputDisabled">1週間</button>
-            <button type="button" class="btn-dark btn btn-sm" @click.prevent='twoWeek'
-              v-bind:disabled="inputDisabled">2週間</button>
           </div>
           <input type="hidden" name="deadline" :value="deadline" class="form-control">
         </div>

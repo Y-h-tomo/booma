@@ -58,7 +58,7 @@ $this->assign('title', 'User List : ユーザーリスト');
                 <tbody>
                   <?php foreach ($mUsers as $mUser) : ?>
                   <tr>
-                    <th scope="row"><?= $this->Number->format($mUser->user_no) ?></th>
+                    <th scope="row"><?= h($mUser->user_no) ?></th>
                     <td><?= h($mUser->name) ?></td>
                     <td><?= h($mUser->login_no) ?></td>
                     <td><?= h($mUser->email) ?></td>

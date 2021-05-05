@@ -66,34 +66,31 @@ window.onload = (function() {
         el: "#js-deadline",
         data: {
             deadline: "",
-            numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             day: "",
         },
         methods: {
-            num: function(number) {
-                this.deadline += number;
-                this.day = (this.deadline / 24).toFixed(2);
-            },
             clear: function() {
                 this.deadline = "";
                 this.day = "";
             },
-            week: function() {
+            threeDays: function() {
+                this.deadline += 24 * 3;
+                this.day = 3;
+            },
+            oneWeek: function() {
                 this.deadline += 24 * 7;
-                this.day = (this.deadline / 24).toFixed(2);
+                this.day = 7;
             },
             twoWeek: function() {
                 this.deadline += 24 * 14;
-                this.day = (this.deadline / 24).toFixed(2);
+                this.day = 14;
+            },
+            threeWeek: function() {
+                this.deadline += 24 * 21;
+                this.day = 21;
             },
         },
         computed: {
-            isDisabled: function() {
-                if (this.deadline.length >= 3) {
-                    return true;
-                }
-                return false;
-            },
             inputDisabled: function() {
                 if (this.deadline.length) {
                     return true;

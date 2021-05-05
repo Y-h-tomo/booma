@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Mailer\Mailer;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use Cake\Datasource\ConnectionManager;
 use Cake\Network\Exception\NotFoundException;
+use App\Controller\TransportFactory;
 
 /**
  * THistories Controller
@@ -324,6 +326,29 @@ class THistoriesController extends AppController
         return $this->redirect(['controller' => 'TBooks', 'action' => 'index']);
     }
 
+
+/* -------------------------------------------------------------------------- */
+/*                                  メール送信メソッド                                 */
+/* -------------------------------------------------------------------------- */
+public function sendMail()
+{
+    $time = FrozenTime::now()->modify("+24 hours");
+    $tHistories = $this->THistories->find()->contain(['MUsers','TBooks'])->where(['TBooks.del_flg' => 0,'MUsers.del_flg'=> 0,'THistories.del_flg' => 0,'THistories.return_time <' => $time])->toArray();
+
+    // debug($tHistories);
+    // exit;
+    foreach($tHistories as $history){
+        $mailer = new Mailer();
+        $mailer->setFrom(['me@example.com' => 'Booma'])
+            ->setDomain('www.example.org')
+            ->setTo($history->m_user['email'])
+            ->setSubject("Booma: {$history->t_book['name']}の返却期限のご連絡")
+            ->viewBuilder()
+                ->setTemplate('default')
+                ->setVar('message', 'こんにちは、世界！');
+        $mailer->deliver();
+    }
+}
 
     /* -------------------------------------------------------------------------- */
     /*ANCHOR                                  カスタムメソッド                                  */

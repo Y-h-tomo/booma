@@ -68,9 +68,9 @@ if ($session->check('User.name')) {
           <div class="col-sm-4">
             <h5><span>¥</span><?= number_format(h($tBook['price'])) ?></h5>
           </div>
-          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル時間</label>
+          <label class="col-sm-2 col-form-label">Deadline：<br>最長レンタル期間</label>
           <div class="col-sm-4">
-            <h5><?= h($tBook['deadline']) ?><span>時間</span></h5>
+            <h5><?= round((h($tBook['deadline'] / 24)), 2); ?><span>日</span></h5>
           </div>
         </div>
 

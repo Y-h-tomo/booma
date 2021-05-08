@@ -32,36 +32,37 @@ class THistoriesController extends AppController
     public function index()
     {
         $user_id = $this->Session->read('User.id');
-            // 検索データ取得
-            $inputName = $this->request->getQuery('search_books');
-            $inputGenre = $this->request->getQuery('genre');
-            $csv = $this->request->getQuery('csv');
+        // 検索データ取得
+        $inputName = $this->request->getQuery('search_books');
+        $inputGenre = $this->request->getQuery('genre');
+        $csv = $this->request->getQuery('csv');
 
         $this->paginate = [
             'sortableFields' => [
                 'id', 'TBooks.name', 'TBooks.book_no', 'rental_time', 'TBooks.remain', 'TBooks.quantity', 'TBooks.id', 'TBooks.image'
             ],
-            'contain' => ['TBooks', 'MUsers','TBooks.MGenres'],
+            'contain' => ['TBooks', 'MUsers', 'TBooks.MGenres'],
         ];
-                // 書籍名曖昧検索
-                if(!empty($inputName)){
-                    $sqlName = $inputName;
-                } else {
-                    $sqlName = '';
-                }
+        // 書籍名曖昧検索
+        if (!empty($inputName)) {
+            $sqlName = $inputName;
+        } else {
+            $sqlName = '';
+        }
 
         // ジャンル選択によりフィルタリング
-        if(!empty($inputGenre)){
-            $id = explode(':',$inputGenre)[0];
-            $tHistories = $this->paginate($this->THistories->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
+        if (!empty($inputGenre)) {
+            $id = explode(':', $inputGenre)[0];
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%", 'THistories.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {
+                return $q->where(['MGenres.id' => $id]);
             }));
-        }else{
-            $tHistories = $this->paginate($this->THistories->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id ]));
+        } else {
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%", 'THistories.m_users_id' => $user_id]));
         }
 
         /* -------------------------------- csv出力メソッド ------------------------------- */
-        if($csv == 1){
-            $this->_csvIndexExport($tHistories);
+        if ($csv == 1) {
+            $this->_csvHistoryExport($tHistories);
         }
 
 
@@ -86,30 +87,35 @@ class THistoriesController extends AppController
     public function view()
     {
         $user_id = $this->Session->read('User.id');
-                    // 検索データ取得
-                    $inputName = $this->request->getQuery('search_books');
-                    $inputGenre = $this->request->getQuery('genre');
-                    $csv = $this->request->getQuery('csv');
+        // 検索データ取得
+        $inputName = $this->request->getQuery('search_books');
+        $inputGenre = $this->request->getQuery('genre');
+        $csv = $this->request->getQuery('csv');
         $this->paginate = [
             'sortableFields' => [
                 'id', 'TBooks.name', 'TBooks.book_no', 'return_time', 'TBooks.remain', 'TBooks.quantity', 'TBooks.id', 'TBooks.image'
             ],
-            'contain' => ['TBooks', 'MUsers','TBooks.MGenres']
+            'contain' => ['TBooks', 'MUsers', 'TBooks.MGenres']
         ];
-            // 書籍名曖昧検索
-            if(!empty($inputName)){
-                $sqlName = $inputName;
-            } else {
-                $sqlName = '';
-            }
+        // 書籍名曖昧検索
+        if (!empty($inputName)) {
+            $sqlName = $inputName;
+        } else {
+            $sqlName = '';
+        }
 
         // ジャンル選択によりフィルタリング
-        if(!empty($inputGenre)){
-            $id = explode(':',$inputGenre)[0];
-            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg'=> 0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
+        if (!empty($inputGenre)) {
+            $id = explode(':', $inputGenre)[0];
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg' => 0, 'TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%", 'THistories.m_users_id' => $user_id])->contain(['TBooks.MGenres'])->matching('TBooks.MGenres', function ($q) use ($id) {
+                return $q->where(['MGenres.id' => $id]);
             }));
-        }else{
-            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg'=> 0,'TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%",'THistories.m_users_id' => $user_id ]));
+        } else {
+            $tHistories = $this->paginate($this->THistories->find('all')->where(['THistories.del_flg' => 0, 'TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%", 'THistories.m_users_id' => $user_id]));
+        }
+        /* -------------------------------- csv出力メソッド ------------------------------- */
+        if ($csv == 1) {
+            $this->_csvRentalExport($tHistories);
         }
 
         $genres = $this->THistories->TBooks->MGenres->find();
@@ -268,7 +274,7 @@ class THistoriesController extends AppController
                 /* --------------------------------- 延滞時間の算出 -------------------------------- */
                 $time = FrozenTime::now()->i18nFormat('yyyy-MM-dd HH:mm:ss');
                 $returnTime = $returned->return_time->i18nFormat('yyyy-MM-dd HH:mm:ss');
-                $arrears = floor((strtotime($time) - strtotime($returnTime))/HOUR);
+                $arrears = floor((strtotime($time) - strtotime($returnTime)) / HOUR);
 
                 /* --------------------------------- 書籍情報の取得 -------------------------------- */
                 $tBook = $this->THistories->TBooks->get([$data['t_books_id']]);
@@ -282,7 +288,7 @@ class THistoriesController extends AppController
 
                 /* ---------------------------------- データ更新 --------------------------------- */
                 $tHistory = $this->THistories->get($returned['id']);
-                if($arrears > 0){
+                if ($arrears > 0) {
                     $tHistory['arrears'] = $arrears;
                 }
                 $tHistory  = $this->THistories->patchEntity(
@@ -327,27 +333,28 @@ class THistoriesController extends AppController
     }
 
 
-/* -------------------------------------------------------------------------- */
-/*                                  メール送信メソッド                                 */
-/* -------------------------------------------------------------------------- */
-public function sendEmail()
-{
-    $time = FrozenTime::now()->modify("+24 hours");
-    $tHistories = $this->THistories->find()->contain(['MUsers','TBooks'])->where(['TBooks.del_flg' => 0,'MUsers.del_flg'=> 0,'THistories.del_flg' => 0,'THistories.return_time <' => $time])->toArray();
+    /* -------------------------------------------------------------------------- */
+    /*                                  メール送信メソッド                                 */
+    /* -------------------------------------------------------------------------- */
+    public function sendEmail()
+    {
+        $time = FrozenTime::now()->modify("+12 hours");
+        $tHistories = $this->THistories->find()->contain(['MUsers', 'TBooks'])->where(['TBooks.del_flg' => 0, 'MUsers.del_flg' => 0, 'THistories.del_flg' => 0, 'THistories.return_time <' => $time])->toArray();
 
-    // debug($tHistories);
-    // exit;
-    foreach ($tHistories as $history) {
-        $mailer = new Mailer();
-        $mailer->setEmailFormat('text')
-        ->setTo($history->m_user['email'])
-        ->setFrom(['me@example.com' => 'Booma'])
-        ->setSubject("Booma: {$history->t_book['name']}の返却期限のご連絡")
-        ->viewBuilder()
-            ->setTemplate('default');
-       $mailer->deliver();
+        // debug($tHistories);
+        // exit;
+
+        foreach ($tHistories as $history) {
+            $returnTime = $history->return_time->i18nFormat('yyyy-MM-dd HH:mm:ss');
+            $mailer = new Mailer();
+            $mailer->setEmailFormat('text')
+                ->setTo('y-haraguchi@spark.ne.jp')
+                // ->setTo($history->m_user['email'])
+                ->setFrom(['booma@info.com' => 'Booma'])
+                ->setSubject("Booma: {$history->t_book['name']}の返却期限のご連絡")
+                ->deliver(" {$history->t_book['name']}の返却期限が12時間をきりました。{$returnTime}までにご返却処理をお願い致します。");
+        }
     }
-}
 
     /* -------------------------------------------------------------------------- */
     /*ANCHOR                                  カスタムメソッド                                  */
@@ -374,13 +381,14 @@ public function sendEmail()
     /**
      * csv出力メソッド
      */
-    protected function _csvIndexExport($tHistories){
+    protected function _csvHistoryExport($tHistories)
+    {
         $histories = $tHistories->toArray();
         $csvBooks = [];
-        foreach($histories as $history){
+        foreach ($histories as $history) {
             $genres = '';
-            foreach($history->t_book->m_genres as $genre){
-                $genres .= $genre->genre.',';
+            foreach ($history->t_book->m_genres as $genre) {
+                $genres .= $genre->genre . ',';
             }
             $history->t_book['genres'] = $genres;
             $csvBooks[] = [
@@ -396,16 +404,53 @@ public function sendEmail()
                 $history->t_book['outline'],
             ];
         };
-        $data = $csvBooks;
+        $data =  mb_convert_encoding($csvBooks, 'SJIS-win', 'UTF-8');
         $_serialize = ['data'];
         $_header = [
-            'ID','画像名', '名前', '書籍No','ジャンル','最終レンタル日','在庫','登録冊数','価格','概要',
+            'ID', '画像名', '名前', '書籍No', 'ジャンル', '最終レンタル日', '在庫', '登録冊数', '価格', '概要',
         ];
+        $_header =  mb_convert_encoding($_header, 'SJIS-win', 'UTF-8');
         $_csvEncoding = 'CP932';
         $_newline = "\r\n";
         $_eol = "\r\n";
         $this->setResponse($this->getResponse()->withDownload('HistoryBooks.csv'));
         $this->viewBuilder()->setClassName('CsvView.Csv');
-        $this->set(compact('data', '_serialize', '_header', '_csvEncoding', '_newline', '_eol'));
+        $this->set(compact('data', '_serialize', '_csvEncoding', '_header', '_newline', '_eol'));
+    }
+    protected function _csvRentalExport($tHistories)
+    {
+        $histories = $tHistories->toArray();
+        $csvBooks = [];
+        foreach ($histories as $history) {
+            $genres = '';
+            foreach ($history->t_book->m_genres as $genre) {
+                $genres .= $genre->genre . ',';
+            }
+            $history->t_book['genres'] = $genres;
+            $csvBooks[] = [
+                $history->id,
+                $history->t_book['image'],
+                $history->t_book['name'],
+                $history->t_book['book_no'],
+                $history->t_book['genres'],
+                $history->return_time->i18nFormat('yyyy-MM-dd HH:mm:ss'),
+                $history->t_book['remain'],
+                $history->t_book['quantity'],
+                $history->t_book['price'],
+                $history->t_book['outline'],
+            ];
+        };
+        $data =  mb_convert_encoding($csvBooks, 'SJIS-win', 'UTF-8');
+        $_serialize = ['data'];
+        $_header = [
+            'ID', '画像名', '名前', '書籍No', 'ジャンル', '返却期限', '在庫', '登録冊数', '価格', '概要',
+        ];
+        $_header =  mb_convert_encoding($_header, 'SJIS-win', 'UTF-8');
+        $_csvEncoding = 'CP932';
+        $_newline = "\r\n";
+        $_eol = "\r\n";
+        $this->setResponse($this->getResponse()->withDownload('RentalBooks.csv'));
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('data', '_serialize', '_csvEncoding', '_header', '_newline', '_eol'));
     }
 }

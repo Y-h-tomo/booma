@@ -37,8 +37,8 @@ class MUsersController extends AppController
             'contain' =>  ['THistories']
         ];
 
-          // ユーザー名曖昧検索
-          if(!empty($inputName)){
+        // ユーザー名曖昧検索
+        if (!empty($inputName)) {
             $sqlName = $inputName;
         } else {
             $sqlName = '';
@@ -46,16 +46,16 @@ class MUsersController extends AppController
 
         // 権限でフィルタリング
         if (!empty($inputRole)) {
-            $query = $this->MUsers->find()->where(['del_flg' => 0,'name LIKE' => "%{$sqlName}%",'role' => $inputRole]);
+            $query = $this->MUsers->find()->where(['del_flg' => 0, 'name LIKE' => "%{$sqlName}%", 'role' => $inputRole]);
         } else {
-            $query = $this->MUsers->find()->where(['del_flg' => 0,'name LIKE' => "%{$sqlName}%"]);
+            $query = $this->MUsers->find()->where(['del_flg' => 0, 'name LIKE' => "%{$sqlName}%"]);
         }
 
         $mUsers = $this->paginate($query);
 
-         /* -------------------------------- csv出力メソッド ------------------------------- */
-        if($csv == 1){
-            $this->_csvExport($mUsers);
+        /* -------------------------------- csv出力メソッド ------------------------------- */
+        if ($csv == 1) {
+            $this->_csvUsersExport($mUsers);
         }
 
         $this->set(compact('mUsers'));
@@ -169,16 +169,17 @@ class MUsersController extends AppController
     }
 
 
-    public function sendEmail($id = null){
+    public function sendEmail($id = null)
+    {
 
         $mailer = new Mailer();
         $mailer->setEmailFormat('text')
-                ->setTo('toのメールアドレスをここに入れる')
-                ->setFrom(['fromのメールアドレスをここに入れる' => 'fromの名前をここに入れる'])
-                ->setSubject('件名をここに入れる')
-                ->viewBuilder()
-                    ->setTemplate('user_added')
-                    ->setVar("token", $token);
+            ->setTo('toのメールアドレスをここに入れる')
+            ->setFrom(['fromのメールアドレスをここに入れる' => 'fromの名前をここに入れる'])
+            ->setSubject('件名をここに入れる')
+            ->viewBuilder()
+            ->setTemplate('user_added')
+            ->setVar("token", $token);
 
         $mailer->deliver();
     }
@@ -207,7 +208,7 @@ class MUsersController extends AppController
         // ログインアクションを認証を必要としないように設定することで、
         // 無限リダイレクトループの問題を防ぐことができます
         // ! ユーザーゼロから追加の場合,add も許可する
-        $this->Authentication->addUnauthenticatedActions(['login','add']);
+        $this->Authentication->addUnauthenticatedActions(['login', 'add']);
     }
     /**
      * ログインメソッド
@@ -301,26 +302,26 @@ class MUsersController extends AppController
     /**
      * csv出力メソッド
      */
-    protected function _csvExport($mUsers)
+    protected function _csvUsersExport($mUsers)
     {
         $users = $mUsers->toArray();
         $csvUsers = [];
-        foreach($users as $user){
-            $roleName ='';
-            switch($user['role']){
-                    case 1:
-                        $roleName = '1：一般ユーザー' ;
-                        break;
-                    case 2:
-                        $roleName = '2：担当者' ;
-                        break;
-                    case 3:
-                        $roleName = '3：管理者' ;
-                        break;
-                    default:
-                        $roleName = '権限なし' ;
-                        break;
-                        }
+        foreach ($users as $user) {
+            $roleName = '';
+            switch ($user['role']) {
+                case 1:
+                    $roleName = '1：一般ユーザー';
+                    break;
+                case 2:
+                    $roleName = '2：担当者';
+                    break;
+                case 3:
+                    $roleName = '3：管理者';
+                    break;
+                default:
+                    $roleName = '権限なし';
+                    break;
+            }
             $csvUsers[] = [
                 $user['id'],
                 $user['user_no'],
@@ -330,11 +331,12 @@ class MUsersController extends AppController
                 $roleName,
             ];
         };
-        $data = $csvUsers;
+        $data =  mb_convert_encoding($csvUsers, 'SJIS-win', 'UTF-8');
         $_serialize = ['data'];
         $_header = [
-            'ID','ユーザーNo', '名前', 'ログインNo','Email','権限',
+            'ID', 'ユーザーNo', '名前', 'ログインNo', 'Email', '権限',
         ];
+        $_header =  mb_convert_encoding($_header, 'SJIS-win', 'UTF-8');
         $_csvEncoding = 'CP932';
         $_newline = "\r\n";
         $_eol = "\r\n";

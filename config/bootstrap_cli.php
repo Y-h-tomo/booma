@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -16,6 +17,9 @@ declare(strict_types=1);
  */
 
 use Cake\Core\Configure;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Cake\Log\Log;
 
 /*
  * Additional bootstrapping and configuration for CLI environments should
@@ -27,5 +31,15 @@ use Cake\Core\Configure;
 //Configure::write('App.fullBaseUrl', php_uname('n'));
 
 // Set logs to different files so they don't have permission conflicts.
-Configure::write('Log.debug.file', 'cli-debug');
-Configure::write('Log.error.file', 'cli-error');
+// Configure::write('Log.debug.file', 'cli-debug');
+// Configure::write('Log.error.file', 'cli-error');
+
+Log::setConfig('default', function () {
+  $log = new Logger('cli');
+  $log->pushHandler(new StreamHandler('logs/command-cli.log'));
+  return $log;
+});
+
+// オプションで、今使っていない不要なデフォルトの CLI ロガーを止めてください
+Configure::delete('Log.debug');
+Configure::delete('Log.error');

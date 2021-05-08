@@ -22,8 +22,6 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
 use Psy\Shell as PsyShell;
-use Cake\Controller\ComponentRegistry;
-use App\Controller\Component\ExampleCommonComponent;
 
 /**
  * Simple console wrapper around Psy\Shell.

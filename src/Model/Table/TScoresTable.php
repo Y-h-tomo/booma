@@ -79,7 +79,7 @@ class TScoresTable extends Table
         $validator
             ->boolean('del_flg')
             ->requirePresence('del_flg', 'create')
-            ->allowEmptyString('del_flg');
+            ->notEmptyString('del_flg');
 
         return $validator;
     }

@@ -17,8 +17,7 @@ $this->disableAutoLayout();
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <meta name="keywords"
-    content="bootstrap, bootstrap admin template, admin theme, admin dashboard, dashboard template, admin template, responsive" />
+  <meta name="keywords" content="bootstrap, bootstrap admin template, admin theme, admin dashboard, dashboard template, admin template, responsive" />
   <meta name="author" content="Codedthemes" />
   <!-- Favicon icon -->
 
@@ -104,7 +103,7 @@ $this->disableAutoLayout();
           <?= $this->Flash->render() ?>
           <?= $this->Form->create(null, ['class' => 'md-float-material form-material']) ?>
           <div class="text-center">
-            <img src="/assets/images/booma-logo.png" alt="booma-logo.png">
+            <img src="/assets/images/booma-logo.png" alt="logo.png">
             <legend>Books Management App
             </legend>
           </div>

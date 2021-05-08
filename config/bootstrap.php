@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -43,6 +44,8 @@ use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /*
  * See https://github.com/josegonzalez/php-dotenv for API details.
@@ -74,6 +77,7 @@ use Cake\Utility\Security;
  * idea to create multiple configuration files, and separate the configuration
  * that changes from configuration that does not. This makes deployment simpler.
  */
+
 try {
     Configure::config('default', new PhpConfig());
     Configure::load('app', 'default', false);
@@ -176,6 +180,17 @@ ServerRequest::addDetector('tablet', function ($request) {
 
     return $detector->isTablet();
 });
+
+// Log::setConfig('default', [
+//     'engine' => 'Syslog'
+// ]);
+Log::setConfig('command', function () {
+    $log = new Logger('app');
+    $log->pushHandler(new StreamHandler('logs/command.log'));
+    return $log;
+});
+Log::drop('debug');
+Log::drop('error');
 
 /*
  * You can set whether the ORM uses immutable or mutable Time types.

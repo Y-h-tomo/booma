@@ -43,30 +43,30 @@ class TBooksController extends AppController
         ];
 
         // 書籍名曖昧検索
-        if(!empty($inputName)){
+        if (!empty($inputName)) {
             $sqlName = $inputName;
         } else {
             $sqlName = '';
         }
 
         // ジャンル選択によりフィルタリング
-        if(!empty($inputGenre)){
-            $id = explode(':',$inputGenre)[0];
-            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ])->contain(['MGenres'])->matching('MGenres', function ($q) use ($id) {return $q->where(['MGenres.id' => $id]);
+        if (!empty($inputGenre)) {
+            $id = explode(':', $inputGenre)[0];
+            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%"])->contain(['MGenres'])->matching('MGenres', function ($q) use ($id) {
+                return $q->where(['MGenres.id' => $id]);
             }));
-        }else{
-            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0,'TBooks.name LIKE' => "%{$sqlName}%" ]));
+        } else {
+            $tBooks = $this->paginate($this->TBooks->find('all')->where(['TBooks.del_flg' => 0, 'TBooks.name LIKE' => "%{$sqlName}%"]));
         }
 
-         /* -------------------------------- csv出力メソッド ------------------------------- */
-        if($csv == 1){
+        /* -------------------------------- csv出力メソッド ------------------------------- */
+        if ($csv == 1) {
             $this->_csvExport($tBooks);
         }
 
         $genres = $this->TBooks->MGenres->find();
         $this->set(compact('genres'));
         $this->set(compact('tBooks'));
-
     }
 
     /**
@@ -80,27 +80,27 @@ class TBooksController extends AppController
     {
 
         $tBook = $this->TBooks->get($id, [
-            'contain' => ['MGenres', 'TFavorites','TScores'],
-            ]);
+            'contain' => ['MGenres', 'TFavorites', 'TScores'],
+        ]);
 
-            // ジャンル整理
-            $genres = [];
-            $mGenres = $tBook->m_genres;
-            foreach ($mGenres as $genre) {
-                $genres[] = $genre->genre;
+        // ジャンル整理
+        $genres = [];
+        $mGenres = $tBook->m_genres;
+        foreach ($mGenres as $genre) {
+            $genres[] = $genre->genre;
+        }
+        // ユーザーログイン時　お気に入り登録ボタンおよび星評価機能を表示
+        if ($this->Session->read('User.id')) {
+            $user_id = $this->Session->read('User.id');
+            $tFavorites = $this->TBooks->TFavorites->find()->where(['TFavorites.t_books_id' => $tBook['id'], 'TFavorites.del_flg' => 0, 'TFavorites.m_users_id' => $user_id])->first();
+            $this->set(compact('tFavorites'));
+
+            $tScores =  $this->TBooks->TScores->find()->where(['TScores.t_books_id' => $tBook['id'], 'TScores.del_flg' => 0, 'TScores.m_users_id' => $user_id])->first();
+
+            if (!empty($tScores)) {
+                $this->set(compact('tScores'));
             }
-            // ユーザーログイン時　お気に入り登録ボタンおよび星評価機能を表示
-            if($this->Session->read('User.id')){
-                $user_id = $this->Session->read('User.id');
-                $tFavorites = $this->TBooks->TFavorites->find()->where(['TFavorites.t_books_id' => $tBook['id'], 'TFavorites.del_flg' => 0, 'TFavorites.m_users_id' => $user_id])->first();
-                $this->set(compact('tFavorites'));
-
-                $tScores =  $this->TBooks->TScores->find()->where(['TScores.t_books_id' => $tBook['id'], 'TScores.del_flg' => 0, 'TScores.m_users_id' => $user_id])->first();
-
-                if(!empty($tScores)){
-                    $this->set(compact('tScores'));
-                }
-            }
+        }
 
         // 書籍の平均評価表示
         $avgQuery =  $this->TBooks->TScores->find()->where(['TScores.t_books_id' => $tBook['id'], 'TScores.del_flg' => 0]);
@@ -243,8 +243,8 @@ class TBooksController extends AppController
                 // debug($data);
                 // デバッグテスト
                 // if (!empty($data)) {
-                    //     throw new NotFoundException(__('データが見つかりません'));
-                    // }
+                //     throw new NotFoundException(__('データが見つかりません'));
+                // }
 
                 /* ---------------------------------- 書籍データ処理 --------------------------------- */
 
@@ -310,7 +310,7 @@ class TBooksController extends AppController
 
         /* ------------------------------- ジャンル情報取得 ------------------------------ */
 
-        $genres = $this->TBooks->MGenres->find()->where(['del_flg'=> 0]);
+        $genres = $this->TBooks->MGenres->find()->where(['del_flg' => 0]);
         $selectGenres = [];
         $beforeGenres = '';
         $mGenres = $tBook->m_genres;
@@ -663,13 +663,14 @@ class TBooksController extends AppController
     /**
      * csv出力メソッド
      */
-    protected function _csvExport($tBooks){
+    protected function _csvExport($tBooks)
+    {
         $books = $tBooks->toArray();
         $csvBooks = [];
-        foreach($books as $book){
+        foreach ($books as $book) {
             $genres = '';
-            foreach($book->m_genres as $genre){
-                $genres .= $genre->genre.',';
+            foreach ($book->m_genres as $genre) {
+                $genres .= $genre->genre . ',';
             }
             $book['genres'] = $genres;
             $csvBooks[] = [
@@ -685,11 +686,12 @@ class TBooksController extends AppController
                 $book['outline'],
             ];
         };
-        $data = $csvBooks;
+        $data =  mb_convert_encoding($csvBooks, 'SJIS-win', 'UTF-8');
         $_serialize = ['data'];
         $_header = [
-            'ID','画像名', '名前', '書籍No','ジャンル','最大レンタル時間','在庫','登録冊数','価格','概要',
+            'ID', '画像名', '名前', '書籍No', 'ジャンル', '最大レンタル時間', '在庫', '登録冊数', '価格', '概要',
         ];
+        $_header =  mb_convert_encoding($_header, 'SJIS-win', 'UTF-8');
         $_csvEncoding = 'CP932';
         $_newline = "\r\n";
         $_eol = "\r\n";

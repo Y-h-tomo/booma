@@ -244,15 +244,15 @@ return [
             // 'tls' => false,
             // 'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
-            // Sample SMTP configuration
-        'gmail' => [
-        'host' => 'smtp.gmail.com',
-        'port' => 587,
-        'username' => 'my@gmail.com',
-        'password' => 'secret',
-        'className' => 'Smtp',
-        'tls' => true
-    ]
+        // Sample SMTP configuration
+        'booma.com' => [
+            'host' => 'smtp.booma.com',
+            'port' => 587,
+            'username' => 'booma@info.com',
+            'password' => 'password',
+            'className' => 'Smtp',
+            'tls' => true
+        ]
     ],
 
     /*
@@ -267,7 +267,8 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => 'booma@example.com',
+            'from' => 'booma@info.com',
+            // 'password' => 'password',
             /*
              * Will by default be set to config value of App.encoding, if that exists otherwise to UTF-8.
              */
@@ -385,7 +386,7 @@ return [
             'file' => 'queries',
             'url' => env('LOG_QUERIES_URL', null),
             'scopes' => ['queriesLog'],
-        ],
+        ]
     ],
 
     /*

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -57,7 +58,7 @@ class TScoresController extends AppController
         $tScore = $this->TScores->newEmptyEntity();
         if ($this->request->is('post')) {
 
-             // トランザクション
+            // トランザクション
             $connection = ConnectionManager::get('default');
             $connection->begin();
             try {
@@ -97,24 +98,24 @@ class TScoresController extends AppController
             $connection = ConnectionManager::get('default');
             $connection->begin();
             try {
-            $data = $this->request->getData();
-            $tScore = $this->TScores->get($data['id']);
-            $tScore = $this->TScores->patchEntity($tScore, $data);
-            if ($this->TScores->save($tScore)) {
-                //   コミット
-                $connection->commit();
+                $data = $this->request->getData();
+                $tScore = $this->TScores->get($data['id']);
+                $tScore = $this->TScores->patchEntity($tScore, $data);
+                if ($this->TScores->save($tScore)) {
+                    //   コミット
+                    $connection->commit();
 
-                $avgQuery =  $this->TScores->find()->where(['t_books_id' => $data['t_books_id'], 'del_flg' => 0]);
-                $avgScore = $avgQuery->select(['avg' => $avgQuery->func()->avg('score')])->toArray()[0];
-                echo $avgScore->avg;
+                    $avgQuery =  $this->TScores->find()->where(['t_books_id' => $data['t_books_id'], 'del_flg' => 0]);
+                    $avgScore = $avgQuery->select(['avg' => $avgQuery->func()->avg('score')])->toArray()[0];
+                    echo $avgScore->avg;
+                    exit;
+                }
+            } catch (\Exception $e) {
+                // ロールバック
+                $connection->rollback();
+                echo $this->request->isCheck('ajax');
                 exit;
             }
-        } catch (\Exception $e) {
-        // ロールバック
-        $connection->rollback();
-        echo $this->request->isCheck('ajax');
-        exit;
-        }
         }
     }
 

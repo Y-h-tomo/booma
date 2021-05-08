@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -14,7 +15,7 @@
  * @var \App\View\AppView $this
  */
 
-// echo $content;
-echo "書籍管理アプリケーション Booma のテストメールです。\n";
+echo "この度はXXXXXXXにご登録いただき、ありがとうございます。\n";
 echo "\n";
-echo "下記の書籍レンタルにおいて、返却期限が24時間を切りましたのでご連絡致します。\n";
+echo "下記のURLにアクセスしていただくと、ユーザー登録が完了します。\n";
+echo "下記のURLの有効期限は24時間です。\n";
